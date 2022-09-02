@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Health_Track.Models
@@ -10,6 +12,7 @@ namespace Health_Track.Models
     public class Profile : INotifyPropertyChanged
     {
         private string _name;
+        [JsonInclude]
         public String Name
         {
             get { return _name; }
@@ -21,6 +24,7 @@ namespace Health_Track.Models
         }
 
         private DateTimeOffset _goalDate;
+        [JsonInclude]
         public DateTimeOffset GoalDate
         {
             get { return _goalDate; }
@@ -32,6 +36,7 @@ namespace Health_Track.Models
         }
 
         private double _goalWeight;
+        [JsonInclude]
         public double GoalWeight
         {
             get { return _goalWeight; }
@@ -43,6 +48,7 @@ namespace Health_Track.Models
         }
 
         private double _currentWeight;
+        [JsonInclude]
         public double CurrentWeight
         {
             get { return _currentWeight; }
@@ -87,6 +93,7 @@ namespace Health_Track.Models
         }
 
         public double _startingWeight;
+        [JsonInclude]
         public double StartingWeight
         {
             get { return _startingWeight; }
@@ -104,18 +111,36 @@ namespace Health_Track.Models
             set
             {
                 _totalLost = value;
+                var currentWeight = _currentWeight;
+                var goalWeight = _goalWeight;
+                var amountToLose = _startingWeight - _goalWeight;
+                var percentage = _totalLost / amountToLose;
+                _goalPercentage = percentage * 100;
                 NotifyPropertyChanged(nameof(TotalLostLabel));
+                NotifyPropertyChanged("GoalPercentage");
             }
         }
 
         public int _goalRate;
+        [JsonInclude]
         public int GoalRate
         {
             get { return _goalRate; }
             set
             {
                 _goalRate = value;
-                NotifyPropertyChanged("GoalRate");
+                NotifyPropertyChanged(nameof(GoalRateLabel));
+            }
+        }
+
+        public double _goalPercentage;
+        public double GoalPercentage
+        {
+            get { return _goalPercentage; }
+            set
+            {
+                _goalPercentage = value;
+                NotifyPropertyChanged("GoalPercentage");
             }
         }
 
@@ -180,6 +205,14 @@ namespace Health_Track.Models
             get
             {
                 return _totalLost + " lbs";
+            }
+        }
+
+        public string GoalRateLabel
+        {
+            get
+            {
+                return _goalRate + " lbs";
             }
         }
 

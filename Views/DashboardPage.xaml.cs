@@ -29,7 +29,7 @@ namespace Health_Track
             this.InitializeComponent();
             
             this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
-            CalculatePercentage();
+            //CalculatePercentage();
         }
 
         public void CalculatePercentage()

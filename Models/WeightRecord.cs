@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Health_Track.Models
 {
     public class WeightRecord : INotifyPropertyChanged
     {
+        [JsonIgnore]
         public double _weight;
+
+        [JsonInclude]
         public double Weight
         {
             get { return _weight; }
@@ -19,7 +23,11 @@ namespace Health_Track.Models
                 NotifyPropertyChanged("Weight");
             }
         }
+
+        [JsonIgnore]
         public DateTimeOffset _date;
+
+        [JsonInclude]
         public DateTimeOffset Date
         {
             get { return _date; }
@@ -29,18 +37,6 @@ namespace Health_Track.Models
                 NotifyPropertyChanged("Date");
             }
         }
-
-        public bool _isSaveEnabled;
-        public bool IsSaveEnabled
-        {
-            get { return _isSaveEnabled; }
-            set
-            {
-                _isSaveEnabled = value;
-                NotifyPropertyChanged("IsSavedEnabled");
-            }
-        }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(String info)

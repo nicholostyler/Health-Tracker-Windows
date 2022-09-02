@@ -4,9 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace Health_Track.ViewModels
 {
@@ -14,7 +18,19 @@ namespace Health_Track.ViewModels
     {
         //TODO: Put Data into a seperate class
         public ObservableCollection<WeightRecord> WeightRecords { get; set; }
-        public Profile Profile;
+        private Profile _profile;
+        public Profile Profile
+        {
+            get
+            {
+                return _profile;
+            }
+            set
+            {
+                _profile = value;
+                NotifyPropertyChanged("Profile");
+            }
+        }
 
         public WeightRecord _selectedWeightRecord;
         public WeightRecord SelectedWeightRecord
@@ -41,24 +57,97 @@ namespace Health_Track.ViewModels
             // Year ago dates
             var yearAgo1 = DateTimeOffset.Now.AddDays(-90);
             var yearAgo2 = DateTimeOffset.Now.AddDays(-120);
-
-            AddWeightRecord(new WeightRecord { Date = yearAgo1, Weight = 230.0 });
-            AddWeightRecord(new WeightRecord { Date = yearAgo2, Weight = 234.0 });
-
-            AddWeightRecord(new WeightRecord { Date = monthAgo1, Weight = 214.0 });
-            AddWeightRecord(new WeightRecord { Date = monthAgo2, Weight = 215.0 });
-
-            AddWeightRecord(new WeightRecord { Date = weekAgo2, Weight = 200.0 });
-            AddWeightRecord(new WeightRecord { Date = weekAgo1, Weight = 205.0 });
-
-            GetWeightWeekAgo();
-            GetWeightMonthAgo();
-            GetWeightYearAgo();
-            GetTotalWeightLoss();
+            /*
+            WeightRecords.Add(new WeightRecord { Weight = 245.0, Date = yearAgo1 });
+            WeightRecords.Add(new WeightRecord { Weight = 240.0, Date = yearAgo2 });
+            WeightRecords.Add(new WeightRecord { Weight = 215.0, Date = monthAgo1 });
+            WeightRecords.Add(new WeightRecord { Weight = 213.0, Date = monthAgo2 });
+            WeightRecords.Add(new WeightRecord { Weight = 210.0, Date = weekAgo1 });
+            WeightRecords.Add(new WeightRecord { Weight = 209.0, Date = weekAgo2 });
+            */
             Profile.GoalWeight = 180.0;
             Profile.GoalDate = DateTimeOffset.Now.AddYears(1);
             Profile.Name = "Nicholos Tyler";
             Profile.GoalRate = 1;
+        }
+
+        public async Task InitAsync()
+        {
+            //await SerializeJSONAsync();
+            await ReadFileFromSystem();
+            GetWeightWeekAgo();
+            GetWeightMonthAgo();
+            GetWeightYearAgo();
+            GetTotalWeightLoss();
+        }
+
+        public async Task SerializeJSONAsync()
+        {
+            var options = new JsonSerializerOptions
+            {
+                IncludeFields = true,
+                WriteIndented = true,
+            };
+
+            string jsonString = JsonSerializer.Serialize(WeightRecords, options);
+            await WriteFileToSystem(jsonString);
+        }
+
+        public void DeserializeJSON(string json)
+        {
+            var options = new JsonSerializerOptions
+            {
+                IncludeFields = true,
+                WriteIndented = true,
+            };
+            if (string.IsNullOrEmpty(json))
+            {
+                Console.Error.WriteLine("Json is empty!");
+            }
+
+            var weights = JsonSerializer.Deserialize<WeightRecord[]>(json, options);
+            
+            // iterate through weights and add them to WeightRecords
+            foreach(var weight in weights)
+            {
+                AddWeightRecord(weight);
+            }
+        }
+
+        public async Task WriteFileToSystem(string content)
+        {
+            // Create file; stop if exists
+            // is backed up to the cloud.
+            StorageFolder storageFolder =
+                ApplicationData.Current.LocalFolder;
+            StorageFile jsonFile =
+                await storageFolder.CreateFileAsync("weight_records.json",
+                    CreationCollisionOption.ReplaceExisting);
+
+            // write to file
+            await FileIO.WriteTextAsync(jsonFile, content);
+            var temp = String.Format("File is located at {0}", jsonFile.Path.ToString());
+        }
+
+        public async Task ReadFileFromSystem()
+        {
+            StorageFolder storageFolder =
+                ApplicationData.Current.LocalFolder;
+            StorageFile jsonFile =
+                await storageFolder.GetFileAsync("weight_records.json");
+            // reading text from file
+            try
+            {
+                string json = await FileIO.ReadTextAsync(jsonFile);
+                DeserializeJSON(json);
+
+
+            }
+            catch (Exception e)
+            {
+                Debug.Write(e.Message);
+            }
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -73,8 +162,12 @@ namespace Health_Track.ViewModels
         public void AddWeightRecord(WeightRecord newWeightRecord)
         {
             if (newWeightRecord == null) return;
-            if (WeightRecords.Count == 0) Profile.StartingWeight = newWeightRecord.Weight;
-            WeightRecords.Add(newWeightRecord);
+            if (WeightRecords.Count == 0)
+            {
+                Profile.StartingWeight = newWeightRecord.Weight;
+            }
+
+                WeightRecords.Add(newWeightRecord);
             Profile.CurrentWeight = newWeightRecord.Weight;
         }
 
@@ -92,29 +185,30 @@ namespace Health_Track.ViewModels
             weekAgo = today.DateTime.AddDays(-7);
 
             var largestWeight = 0.0;
-            var currentWeight = 0.0;
+            var currentLargest = 0.0;
             var lostTotal = 0.0;
             foreach (var weight in WeightRecords)
             {
                 TimeSpan diff = weight.Date - weekAgo;
-                currentWeight = weight.Weight;
+                currentLargest = weight.Weight;
                 if (diff.Days > 7 || diff.Days < 0) continue;
-                if (currentWeight == Profile.CurrentWeight) continue;
+                if (currentLargest == Profile.CurrentWeight) continue;
 
                 if (largestWeight == 0.0)
                 {
-                    currentWeight = weight.Weight;
+                    currentLargest = weight.Weight;
                     largestWeight = weight.Weight;
                 }
 
 
-                if (currentWeight > largestWeight)
+                if (currentLargest > largestWeight)
                 {
-                    largestWeight = currentWeight;
+                    largestWeight = currentLargest;
                 }
 
             }
-            lostTotal = (currentWeight - largestWeight);
+            //TODO: BUG if all dates are the same
+            lostTotal = (largestWeight - Profile.CurrentWeight);
             Profile.Weight7Days = lostTotal;
         }
 

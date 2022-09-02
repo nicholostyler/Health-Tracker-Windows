@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Health_Track.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -29,12 +32,16 @@ namespace Health_Track
             {
                 ("home", typeof(DashboardPage)),
                 ("logbook", typeof(LogbookPage)),
-                ("profile", typeof(ProfilePage))
+                ("profile", typeof(ProfilePage)),
+                ("settings", typeof(SettingsPage))
             };
         public MainPage()
         {
             this.InitializeComponent();
+            
         }
+
+
 
         private void NavigationViewControl_Loaded(object sender, RoutedEventArgs args)
         {
@@ -47,8 +54,7 @@ namespace Health_Track
             Type _page = null;
             if (navItemTag == "settings")
             {
-                // _page = typeof(SettingsPage);
-                // TODO
+                 _page = typeof(SettingsPage);
             }
             else
             {
@@ -71,6 +77,7 @@ namespace Health_Track
         {
             if (args.IsSettingsInvoked == true)
             {
+                NavigationViewControl.Header = "Settings";
                 NavView_Navigate("settings", (EntranceNavigationTransitionInfo)args.RecommendedNavigationTransitionInfo);
             }
             else if (args.InvokedItemContainer != null)
@@ -94,12 +101,37 @@ namespace Health_Track
 
             // Don't go back if the nav pane is overlayed.
             if (NavigationViewControl.IsPaneOpen &&
-                (NavigationViewControl.DisplayMode == NavigationViewDisplayMode.Compact ||
-                 NavigationViewControl.DisplayMode == NavigationViewDisplayMode.Minimal))
+                (NavigationViewControl.DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Compact  ||
+                 NavigationViewControl.DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal))
                 return false;
 
             contentFrame.GoBack();
             return true;
+        }
+
+        private void NavigationViewControl_ItemInvoked_1(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
+        {
+            if (args.IsSettingsInvoked == true)
+            {
+                NavigationViewControl.Header = "Settings";
+                NavView_Navigate("settings", (EntranceNavigationTransitionInfo)args.RecommendedNavigationTransitionInfo);
+            }
+            else if (args.InvokedItemContainer != null)
+            {
+                var navItemTag = args.InvokedItemContainer.Tag.ToString();
+                NavigationViewControl.Header = char.ToUpper(navItemTag[0]) + navItemTag.Substring(1);
+                NavView_Navigate(navItemTag, (EntranceNavigationTransitionInfo)args.RecommendedNavigationTransitionInfo);
+            }
+        }
+
+        private void NavigationViewControl_BackRequested_1(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs args)
+        {
+            TryGoBack();
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            await App.Current.Services.GetRequiredService<WeightRecordViewModel>().InitAsync();
         }
     }
 }

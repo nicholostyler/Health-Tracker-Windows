@@ -7,9 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+>
 
-    <Grid>
+    <Grid Background="Transparent">
         <ScrollViewer>
             <Grid Margin="12,12,12,0">
                 <Grid.RowDefinitions>
@@ -159,7 +159,7 @@
                         </Grid>
 
                     </Grid>
-                    <ProgressBar x:Name="ProgressBar"  Grid.Row="2" Value="50"/>
+                    <ProgressBar x:Name="ProgressBar" Value="{Binding GoalPercentage, UpdateSourceTrigger=PropertyChanged,  Mode=TwoWay}" Grid.Row="2"/>
 
                 </Grid>
                 <Grid Grid.Row="3"
@@ -193,15 +193,15 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Height="50" Background="DimGray" Margin="0,0,12,0" MaxWidth="100">
+                            <Border  Grid.Column="0" Height="50" Background="{ThemeResource SystemAccentColor}" Margin="0,0,12,0" MaxWidth="100">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="Goal Rate"/>
-                                    <TextBlock Text="2 lb"/>
+                                    <TextBlock Text="Goal Rate" Foreground="{ThemeResource SystemAltHighColor}"/>
+                                    <TextBlock Text="{Binding GoalRateLabel}" Foreground="{ThemeResource SystemAltHighColor}"/>
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="1" Height="50" Background="DimGray" MaxWidth="100">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="Goal Rate"/>
+                                    <TextBlock Text="Current Rate"/>
                                     <TextBlock Text="2 lb"/>
                                 </StackPanel>
                             </Border>
@@ -215,8 +215,8 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="216 lbs"/>
-                                <TextBlock Grid.Column="1" Text="On 09/02/2022"/>
+                                <TextBlock Grid.Column="0" Text="200 lbs"/>
+                                <TextBlock Grid.Column="1" Text="On 10/01/2022"/>
                                 <TextBlock Grid.Column="2" Text="Next Month"/>
                             </Grid>
                             <Grid>
@@ -225,9 +225,9 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="216 lbs"/>
-                                <TextBlock Grid.Column="1" Text="On 09/02/2022"/>
-                                <TextBlock Grid.Column="2" Text="Next Month"/>
+                                <TextBlock Grid.Column="0" Text="195 lbs"/>
+                                <TextBlock Grid.Column="1" Text="On 12/01/2022"/>
+                                <TextBlock Grid.Column="2" Text="Next 3 Months"/>
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -235,9 +235,9 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="216 lbs"/>
-                                <TextBlock Grid.Column="1" Text="On 09/02/2022"/>
-                                <TextBlock Grid.Column="2" Text="Next Month"/>
+                                <TextBlock Grid.Column="0" Text="180 lbs"/>
+                                <TextBlock Grid.Column="1" Text="On 03/01/2023"/>
+                                <TextBlock Grid.Column="2" Text="Next 6 Months"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
