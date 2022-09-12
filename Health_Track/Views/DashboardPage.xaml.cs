@@ -40,7 +40,7 @@ namespace Health_Track
 
             //Populate your progress card
             //CalculatePercentage();
-        }
+       }
 
         public void PopulateProgressCard()
         {

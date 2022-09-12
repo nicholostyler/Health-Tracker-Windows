@@ -129,7 +129,7 @@ namespace Health_Track.Models
                 var currentWeight = _currentWeight;
                 var goalWeight = _goalWeight;
                 var amountToLose = _startingWeight - _goalWeight;
-                var percentage = _totalLost / amountToLose;
+                var percentage = _goalWeight / _currentWeight;
                 _goalPercentage = percentage * 100;
                 NotifyPropertyChanged(nameof(TotalLostLabel));
                 NotifyPropertyChanged("GoalPercentage");

@@ -76,18 +76,20 @@ namespace Health_Track.ViewModels
         {
             //await SerializeJSONAsync();
             await ReadFileFromSystem();
+            var sortableCollection = new List<WeightRecord>(WeightRecords);
+            sortableCollection.Sort((a, b) => a.Weight.CompareTo(b.Weight));
+            for (int i = 0; i < sortableCollection.Count; i++)
+            {
+                WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
+                await SerializeJSONAsync();
+            }
             GetWeightWeekAgo();
             GetWeightMonthAgo();
             GetWeightYearAgo();
             GetTotalWeightLoss();
 
             // sort 
-            var sortableCollection = new List<WeightRecord>(WeightRecords);
-            sortableCollection.Sort((a,b) => a.Weight.CompareTo(b.Weight));
-            for(int i = 0; i < sortableCollection.Count; i++)
-            {
-                WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
-            }
+            
         }
 
         public async Task SerializeJSONAsync()
@@ -201,6 +203,7 @@ namespace Health_Track.ViewModels
      .Where(m => m.Date <= today && m.Date > weekAgo)
      .Concat(WeightRecords.Where(d => d.Date > weekAgo).TakeLast(1));
 
+            if (WeightRecords == null || WeightRecords.Count == 0) return; 
             var largestWeight = items.Max(weight => weight.Weight);
             var lostTotal = largestWeight - Profile.CurrentWeight;
             Profile.Weight7Days = lostTotal;
@@ -250,6 +253,8 @@ namespace Health_Track.ViewModels
      .Where(m => m.Date <= today && m.Date > monthAgo)
      .Concat(WeightRecords.Where(d => d.Date > monthAgo).TakeLast(1));
 
+            if (WeightRecords == null || WeightRecords.Count == 0) return;
+
             var largestWeight = items.Max(weight => weight.Weight);
             var lostTotal = largestWeight - Profile.CurrentWeight;
             Profile.Weight30Days = lostTotal;
@@ -290,6 +295,8 @@ namespace Health_Track.ViewModels
      .OrderByDescending(a => a.Date)
      .Where(m => m.Date <= today && m.Date > yearAgo)
      .Concat(WeightRecords.Where(d => d.Date > yearAgo).TakeLast(1));
+
+            if (WeightRecords == null || WeightRecords.Count == 0) return;
 
             var largestWeight = items.Max(weight => weight.Weight);
             var lostTotal = largestWeight - Profile.CurrentWeight;
