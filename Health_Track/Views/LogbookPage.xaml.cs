@@ -1,4 +1,5 @@
-﻿using Health_Track.Models;
+﻿using ColorCode.Common;
+using Health_Track.Models;
 using Health_Track.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Uwp.UI.Controls;
@@ -37,7 +38,7 @@ namespace Health_Track
             //viewModel = App.Current.Services.GetService<WeightRecordViewModel>();
             //viewModel.AddWeightRecord(new WeightRecord { Date = DateTime.Now, Weight = 200.0 });
             this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>();
-
+            //LogbookListView.DataContext = viewModel.WeightRecords.sort
             // set listview to first item in WeightRecords
             LogbookListView.SelectedIndex = 0;
         }
@@ -64,7 +65,7 @@ namespace Health_Track
                 var dialogPage = dialog.Content as NewWeightRecordDialogContent;
                 DateTimeOffset newDate = dialogPage.NewDate;
                 double newWeight = dialogPage.NewWeight;
-                viewModel.AddWeightRecord(new Models.WeightRecord { Weight = newWeight, Date = newDate });
+                await viewModel.AddWeightRecord(new Models.WeightRecord { Weight = newWeight, Date = newDate });
             }
         }
 

@@ -34,8 +34,13 @@ namespace Health_Track.Models
             set 
             {
                 _date = value;
-                NotifyPropertyChanged("Date");
+                NotifyPropertyChanged(nameof(DateLabel));
             }
+        }
+
+        public string DateLabel
+        {
+            get { return _date.ToString("d"); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -10,11 +10,12 @@
     >
     <Grid Margin="0,12,0,0">
         <controls:ListDetailsView x:Name="LogbookListView" Background="Transparent" BackButtonBehavior="System" ItemsSource="{Binding WeightRecords}" >
+            
             <controls:ListDetailsView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="0,8">
                         <TextBlock Text="{Binding Weight}"/>
-                        <TextBlock Text="{Binding Date}"/>
+                        <TextBlock Text="{Binding DateLabel}"/>
                     </StackPanel>
                 </DataTemplate>
             </controls:ListDetailsView.ItemTemplate>

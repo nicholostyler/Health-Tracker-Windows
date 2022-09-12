@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI;
 
 namespace Health_Track.ViewModels
 {
@@ -79,6 +80,14 @@ namespace Health_Track.ViewModels
             GetWeightMonthAgo();
             GetWeightYearAgo();
             GetTotalWeightLoss();
+
+            // sort 
+            var sortableCollection = new List<WeightRecord>(WeightRecords);
+            sortableCollection.Sort((a,b) => a.Weight.CompareTo(b.Weight));
+            for(int i = 0; i < sortableCollection.Count; i++)
+            {
+                WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
+            }
         }
 
         public async Task SerializeJSONAsync()
@@ -93,7 +102,7 @@ namespace Health_Track.ViewModels
             await WriteFileToSystem(jsonString);
         }
 
-        public void DeserializeJSON(string json)
+        public async Task DeserializeJSON(string json)
         {
             var options = new JsonSerializerOptions
             {
@@ -110,8 +119,9 @@ namespace Health_Track.ViewModels
             // iterate through weights and add them to WeightRecords
             foreach(var weight in weights)
             {
-                AddWeightRecord(weight);
+                await AddWeightRecord(weight);
             }
+            Profile.StartingWeight = weights[weights.Length - 1].Weight;
         }
 
         public async Task WriteFileToSystem(string content)
@@ -139,9 +149,7 @@ namespace Health_Track.ViewModels
             try
             {
                 string json = await FileIO.ReadTextAsync(jsonFile);
-                DeserializeJSON(json);
-
-
+                await DeserializeJSON(json);
             }
             catch (Exception e)
             {
@@ -159,16 +167,19 @@ namespace Health_Track.ViewModels
             }
         }
 
-        public void AddWeightRecord(WeightRecord newWeightRecord)
+        public async Task AddWeightRecord(WeightRecord newWeightRecord)
         {
             if (newWeightRecord == null) return;
             if (WeightRecords.Count == 0)
             {
-                Profile.StartingWeight = newWeightRecord.Weight;
+                //Profile.StartingWeight = newWeightRecord.Weight;
+                Profile.CurrentWeight = newWeightRecord.Weight;
             }
 
-                WeightRecords.Add(newWeightRecord);
-            Profile.CurrentWeight = newWeightRecord.Weight;
+            WeightRecords.Add(newWeightRecord);
+
+            // begin to save into JSON
+            await SerializeJSONAsync();
         }
 
         public void UpdateWeightRecord(WeightRecord newWeightRecord, WeightRecord selectedRecord)
@@ -180,44 +191,50 @@ namespace Health_Track.ViewModels
 
         public void GetWeightWeekAgo()
         {
-            DateTimeOffset weekAgo = new DateTimeOffset();
-            DateTimeOffset today = DateTimeOffset.Now;
+            DateTimeOffset weekAgo = new DateTime();
+            DateTimeOffset today = DateTime.Now;
             weekAgo = today.DateTime.AddDays(-7);
 
-            var largestWeight = 0.0;
-            var currentLargest = 0.0;
-            var lostTotal = 0.0;
-            foreach (var weight in WeightRecords)
-            {
-                TimeSpan diff = weight.Date - weekAgo;
-                currentLargest = weight.Weight;
-                if (diff.Days > 7 || diff.Days < 0) continue;
-                if (currentLargest == Profile.CurrentWeight) continue;
+            // get all dates in the past 7 days
+            var items = WeightRecords
+     .OrderByDescending(a => a.Date)
+     .Where(m => m.Date <= today && m.Date > weekAgo)
+     .Concat(WeightRecords.Where(d => d.Date > weekAgo).TakeLast(1));
 
-                if (largestWeight == 0.0)
-                {
-                    currentLargest = weight.Weight;
-                    largestWeight = weight.Weight;
-                }
+            var largestWeight = items.Max(weight => weight.Weight);
+            var lostTotal = largestWeight - Profile.CurrentWeight;
+            Profile.Weight7Days = lostTotal;
+            //foreach (var weight in items)
+            //{
+            //    //TimeSpan diff = weight.Date - weekAgo;
+            //    //currentLargest = weight.Weight;
+            //    //if (diff.Days > 7 || diff.Days < 0) continue;
+            //    if (currentLargest == Profile.CurrentWeight) continue;
+
+            //    if (largestWeight == 0.0)
+            //    {
+            //        currentLargest = weight.Weight;
+            //        largestWeight = weight.Weight;
+            //    }
 
 
-                if (currentLargest > largestWeight)
-                {
-                    largestWeight = currentLargest;
-                }
+            //    if (currentLargest > largestWeight)
+            //    {
+            //        largestWeight = currentLargest;
+            //    }
 
-            }
-            //TODO: BUG if all dates are the same
-            if (largestWeight == 0)
-            {
-                Profile.Weight7Days = 0;
-            }
-            else
-            {
-                lostTotal = (largestWeight - Profile.CurrentWeight);
-                Profile.Weight7Days = lostTotal;
-            }
-            
+            //}
+            ////TODO: BUG if all dates are the same
+            //if (largestWeight == 0)
+            //{
+            //    Profile.Weight7Days = 0;
+            //}
+            //else
+            //{
+            //    lostTotal = (largestWeight - Profile.CurrentWeight);
+            //    Profile.Weight7Days = lostTotal;
+            //}
+
         }
 
         public void GetWeightMonthAgo()
@@ -226,31 +243,41 @@ namespace Health_Track.ViewModels
             DateTimeOffset today = DateTimeOffset.Now;
             monthAgo = today.DateTime.AddMonths(-1);
 
-            var largestWeight = 0.0;
-            var currentWeight = 0.0;
-            var lostTotal = 0.0;
-            foreach (var weight in WeightRecords)
-            {
-                TimeSpan diff = weight.Date - monthAgo;
-                currentWeight = weight.Weight;
-                if (diff.Days > 30 || diff.Days < 0) continue;
-                if (currentWeight == Profile.CurrentWeight) continue;
 
-                if (largestWeight == 0.0)
-                {
-                    currentWeight = weight.Weight;
-                    largestWeight = weight.Weight;
-                }
+            // get all dates in the past 7 days
+            var items = WeightRecords
+     .OrderByDescending(a => a.Date)
+     .Where(m => m.Date <= today && m.Date > monthAgo)
+     .Concat(WeightRecords.Where(d => d.Date > monthAgo).TakeLast(1));
 
-
-                if (currentWeight > largestWeight)
-                {
-                    largestWeight = currentWeight;
-                }
-
-            }
-            lostTotal = (largestWeight - currentWeight);
+            var largestWeight = items.Max(weight => weight.Weight);
+            var lostTotal = largestWeight - Profile.CurrentWeight;
             Profile.Weight30Days = lostTotal;
+
+
+
+            //foreach (var weight in WeightRecords)
+            //{
+            //    TimeSpan diff = weight.Date - monthAgo;
+            //    currentWeight = weight.Weight;
+            //    if (diff.Days > 30 || diff.Days < 0) continue;
+            //    if (currentWeight == Profile.CurrentWeight) continue;
+
+            //    if (largestWeight == 0.0)
+            //    {
+            //        currentWeight = weight.Weight;
+            //        largestWeight = weight.Weight;
+            //    }
+
+
+            //    if (currentWeight > largestWeight)
+            //    {
+            //        largestWeight = currentWeight;
+            //    }
+
+            //}
+            //lostTotal = (largestWeight - Profile.CurrentWeight);
+            //Profile.Weight30Days = lostTotal;
         }
         public void GetWeightYearAgo()
         {
@@ -258,30 +285,35 @@ namespace Health_Track.ViewModels
             DateTimeOffset today = DateTimeOffset.Now;
             yearAgo = today.DateTime.AddYears(-1);
 
-            var largestWeight = 0.0;
-            var currentWeight = 0.0;
-            var lostTotal = 0.0;
-            foreach (var weight in WeightRecords)
-            {
-                TimeSpan diff = weight.Date - yearAgo;
-                currentWeight = weight.Weight;
-                if (diff.Days > 365 || diff.Days < 0) continue;
-                if (currentWeight == Profile.CurrentWeight) continue;
+            // get all dates in the past 7 days
+            var items = WeightRecords
+     .OrderByDescending(a => a.Date)
+     .Where(m => m.Date <= today && m.Date > yearAgo)
+     .Concat(WeightRecords.Where(d => d.Date > yearAgo).TakeLast(1));
 
-                if (largestWeight == 0.0)
-                {
-                    currentWeight = weight.Weight;
-                    largestWeight = weight.Weight;
-                }
+            var largestWeight = items.Max(weight => weight.Weight);
+            var lostTotal = largestWeight - Profile.CurrentWeight;
+            //foreach (var weight in WeightRecords)
+            //{
+            //    TimeSpan diff = weight.Date - yearAgo;
+            //    currentWeight = weight.Weight;
+            //    if (diff.Days > 365 || diff.Days < 0) continue;
+            //    if (currentWeight == Profile.CurrentWeight) continue;
+
+            //    if (largestWeight == 0.0)
+            //    {
+            //        currentWeight = weight.Weight;
+            //        largestWeight = weight.Weight;
+            //    }
 
 
-                if (currentWeight > largestWeight)
-                {
-                    largestWeight = currentWeight;
-                }
+            //    if (currentWeight > largestWeight)
+            //    {
+            //        largestWeight = currentWeight;
+            //    }
 
-            }
-            lostTotal = (largestWeight - currentWeight);
+            //}
+            //lostTotal = (largestWeight - currentWeight);
             Profile.WeightLastYear = lostTotal;
         }
 
