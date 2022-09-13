@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -13,9 +14,11 @@ namespace Health_Track.Models
 {
     public class Profile : INotifyPropertyChanged
     {
-        private string _name;
-        [JsonInclude]
-        public String Name
+        [JsonPropertyName("Name")]
+        public string _name;
+
+        [JsonIgnore]
+        public string Name
         {
             get { return _name; }
             set
@@ -25,8 +28,9 @@ namespace Health_Track.Models
             }
         }
 
-        private DateTimeOffset _goalDate;
-        [JsonInclude]
+        [JsonPropertyName("GoalDate")]
+        public DateTimeOffset _goalDate;
+        [JsonIgnore]
         public DateTimeOffset GoalDate
         {
             get { return _goalDate; }
@@ -37,8 +41,9 @@ namespace Health_Track.Models
             }
         }
 
-        private double _goalWeight;
-        [JsonInclude]
+        [JsonPropertyName("GoalWeight")]
+        public double _goalWeight;
+        [JsonIgnore]
         public double GoalWeight
         {
             get { return _goalWeight; }
@@ -50,8 +55,9 @@ namespace Health_Track.Models
             }
         }
 
-        private double _currentWeight;
-        [JsonInclude]
+        [JsonPropertyName("CurrentWeight")]
+        public double _currentWeight;
+        [JsonIgnore]
         public double CurrentWeight
         {
             get { return _currentWeight; }
@@ -73,8 +79,9 @@ namespace Health_Track.Models
                 NotifyPropertyChanged(nameof(Progress6MonthLabel));
             }
         }
-
-        private double _weight7Days;
+        [JsonPropertyName("Weight7Days")]
+        public double _weight7Days;
+        [JsonIgnore]
         public double Weight7Days
         {
             get { return _weight7Days; }
@@ -84,8 +91,9 @@ namespace Health_Track.Models
                 NotifyPropertyChanged(nameof(Last7DaysLabel));
             }
         }
-
-        private double _weight30Days;
+        [JsonPropertyName("Weight30Days")]
+        public double _weight30Days;
+        [JsonIgnore]
         public double Weight30Days
         {
             get { return _weight30Days; }
@@ -96,7 +104,9 @@ namespace Health_Track.Models
             }
         }
 
+        [JsonPropertyName("WeightLastYear")]
         public double _weightLastYear;
+        [JsonIgnore]
         public double WeightLastYear
         {
             get { return _weightLastYear; }
@@ -106,9 +116,10 @@ namespace Health_Track.Models
                 NotifyPropertyChanged(nameof(WeightLastYear));
             }
         }
-
+        [JsonPropertyName("StartingWeight")]
         public double _startingWeight;
-        [JsonInclude]
+
+        [JsonIgnore]
         public double StartingWeight
         {
             get { return _startingWeight; }
@@ -118,8 +129,9 @@ namespace Health_Track.Models
                 NotifyPropertyChanged(nameof(StartingWeightLabel));
             }
         }
-
+        [JsonPropertyName("TotalLost")]
         public double _totalLost;
+        [JsonIgnore]
         public double TotalLost
         {
             get { return _totalLost; }
@@ -136,8 +148,9 @@ namespace Health_Track.Models
             }
         }
 
+        [JsonPropertyName("GoalRate")]
         public int _goalRate;
-        [JsonInclude]
+        [JsonIgnore]
         public int GoalRate
         {
             get { return _goalRate; }
@@ -149,7 +162,21 @@ namespace Health_Track.Models
             }
         }
 
+        [JsonPropertyName("AverageRate")]
+        public double _averageRate;
+        public double AverageWeight
+        {
+            get { return _averageRate; }
+            set
+            {
+                _averageRate = value;
+                NotifyPropertyChanged("AverageWeight");
+            }
+        }
+
+        [JsonIgnore]
         public double _goalPercentage;
+        [JsonIgnore]
         public double GoalPercentage
         {
             get { return _goalPercentage; }
@@ -159,12 +186,12 @@ namespace Health_Track.Models
                 NotifyPropertyChanged("GoalPercentage");
             }
         }
-
+        [JsonIgnore]
         public string CurrentWeightLabel
         {
             get { return _currentWeight + " lbs"; }
         }
-
+        [JsonIgnore]
         public string Last7DaysLabel
         {
             
@@ -175,7 +202,7 @@ namespace Health_Track.Models
                     return _weight7Days + " gained";
             }
         }
-
+        [JsonIgnore]
         public string Last30DaysLabel
         {
 
@@ -187,7 +214,7 @@ namespace Health_Track.Models
                     return _weight30Days + " gained";
             }
         }
-
+        [JsonIgnore]
         public string LastYearLabel
         {
 
@@ -199,7 +226,7 @@ namespace Health_Track.Models
                     return _weightLastYear + " gained";
             }
         }
-
+        [JsonIgnore]
         public string TargetWeightLabel
         {
             get
@@ -207,7 +234,7 @@ namespace Health_Track.Models
                 return _goalWeight + " lbs";
             }
         }
-
+        [JsonIgnore]
         public string StartingWeightLabel
         {
             get
@@ -215,7 +242,7 @@ namespace Health_Track.Models
                 return _startingWeight + " lbs";
             }
         }
-
+        [JsonIgnore]
         public string TotalLostLabel
         {
             get
@@ -223,7 +250,7 @@ namespace Health_Track.Models
                 return _totalLost + " lbs";
             }
         }
-
+        [JsonIgnore]
         public string GoalRateLabel
         {
             get
@@ -231,9 +258,13 @@ namespace Health_Track.Models
                 return _goalRate + " lbs";
             }
         }
+        [JsonIgnore]
         public double _progressMonth;
+        [JsonIgnore]
         public double _progress3Months;
+        [JsonIgnore]
         public double _progress6Months;
+        [JsonIgnore]
         public double ProgressMonth
         {
             get
@@ -246,6 +277,7 @@ namespace Health_Track.Models
                 NotifyPropertyChanged(nameof(ProgressMonthLabel));
             }
         }
+        [JsonIgnore]
         public double Progress3Months { 
             get
             {
@@ -257,7 +289,7 @@ namespace Health_Track.Models
                 NotifyPropertyChanged(nameof(Progress3MonthLabel));
             }
         }
-
+        [JsonIgnore]
         public double Progress6Months
         {
             get
@@ -270,13 +302,14 @@ namespace Health_Track.Models
                 NotifyPropertyChanged(nameof(Progress6MonthLabel));
             }
         }
-
+        [JsonIgnore]
         public string ProgressMonthLabel { 
             get
             {
                 return _progressMonth + " lbs";
             }
         }
+        [JsonIgnore]
         public string Progress3MonthLabel
         {
             get
@@ -284,6 +317,7 @@ namespace Health_Track.Models
                 return _progress3Months + " lbs";
             }
         }
+        [JsonIgnore]
         public string Progress6MonthLabel
         {
             get
@@ -292,10 +326,10 @@ namespace Health_Track.Models
             }
         }
 
-
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(String info)
         {
+
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(info));

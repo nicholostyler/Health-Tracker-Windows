@@ -75,24 +75,23 @@ namespace Health_Track.ViewModels
         public async Task InitAsync()
         {
             //await SerializeJSONAsync();
-            await ReadFileFromSystem();
+            await ReadFileFromSystem(true);
+            await ReadFileFromSystem(false);
             var sortableCollection = new List<WeightRecord>(WeightRecords);
             sortableCollection.Sort((a, b) => a.Weight.CompareTo(b.Weight));
             for (int i = 0; i < sortableCollection.Count; i++)
             {
                 WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
-                await SerializeJSONAsync();
+                await SerializeWeightRecordsAsync();
             }
-            GetWeightWeekAgo();
-            GetWeightMonthAgo();
-            GetWeightYearAgo();
-            GetTotalWeightLoss();
-
-            // sort 
-            
+            //GetWeightWeekAgo();
+            //GetWeightMonthAgo();
+            //GetWeightYearAgo();
+            //GetTotalWeightLoss();
+            //await SerializeProfileAsync();
         }
 
-        public async Task SerializeJSONAsync()
+        public async Task SerializeWeightRecordsAsync()
         {
             var options = new JsonSerializerOptions
             {
@@ -101,10 +100,22 @@ namespace Health_Track.ViewModels
             };
 
             string jsonString = JsonSerializer.Serialize(WeightRecords, options);
-            await WriteFileToSystem(jsonString);
+            await WriteFileToSystem(jsonString, true);
         }
 
-        public async Task DeserializeJSON(string json)
+        public async Task SerializeProfileAsync()
+        {
+            var options = new JsonSerializerOptions
+            {
+                IncludeFields = true,
+                WriteIndented = true,
+            };
+
+            string jsonString = JsonSerializer.Serialize(Profile, options);
+            await WriteFileToSystem(jsonString, false);
+        }
+
+        public async Task DeserializeJSON(string json, bool isRecords)
         {
             var options = new JsonSerializerOptions
             {
@@ -116,47 +127,99 @@ namespace Health_Track.ViewModels
                 Console.Error.WriteLine("Json is empty!");
             }
 
-            var weights = JsonSerializer.Deserialize<WeightRecord[]>(json, options);
-            
-            // iterate through weights and add them to WeightRecords
-            foreach(var weight in weights)
+            if (isRecords)
             {
-                await AddWeightRecord(weight);
+                var weights = JsonSerializer.Deserialize<WeightRecord[]>(json, options);
+
+                // iterate through weights and add them to WeightRecords
+                foreach (var weight in weights)
+                {
+                    await AddWeightRecord(weight);
+                }
+                Profile.StartingWeight = weights[weights.Length - 1].Weight;
+
             }
-            Profile.StartingWeight = weights[weights.Length - 1].Weight;
+            else
+            {
+                var profile = JsonSerializer.Deserialize<Profile>(json, options);
+                // Set the variables manually as they don't fire when deserialize for Label variables
+                // TODO: FIX?
+                Profile.Weight7Days = profile.Weight7Days;
+                Profile.Weight30Days = profile.Weight30Days;
+                Profile.WeightLastYear = profile.WeightLastYear;
+                Profile.CurrentWeight = profile.CurrentWeight;
+                Profile.TotalLost = profile.TotalLost;
+                Profile.AverageWeight = profile.AverageWeight;
+                Profile = profile;
+            }
+
+
         }
 
-        public async Task WriteFileToSystem(string content)
+        public async Task WriteFileToSystem(string content, bool isRecords)
         {
             // Create file; stop if exists
             // is backed up to the cloud.
             StorageFolder storageFolder =
                 ApplicationData.Current.LocalFolder;
-            StorageFile jsonFile =
+            StorageFile jsonFile;
+
+            if (isRecords)
+            {
+                jsonFile =
                 await storageFolder.CreateFileAsync("weight_records.json",
                     CreationCollisionOption.ReplaceExisting);
+            }
+            else
+            {
+                jsonFile =
+                await storageFolder.CreateFileAsync("profile.json",
+                    CreationCollisionOption.ReplaceExisting);
+            }
+            
 
             // write to file
             await FileIO.WriteTextAsync(jsonFile, content);
             var temp = String.Format("File is located at {0}", jsonFile.Path.ToString());
         }
 
-        public async Task ReadFileFromSystem()
+        public async Task ReadFileFromSystem(bool isRecords)
         {
             StorageFolder storageFolder =
                 ApplicationData.Current.LocalFolder;
-            StorageFile jsonFile =
+            StorageFile jsonFile;
+            if (isRecords)
+            {
+                 jsonFile =
                 await storageFolder.GetFileAsync("weight_records.json");
-            // reading text from file
-            try
-            {
-                string json = await FileIO.ReadTextAsync(jsonFile);
-                await DeserializeJSON(json);
+                // reading text from file
+                try
+                {
+                    string json = await FileIO.ReadTextAsync(jsonFile);
+                    await DeserializeJSON(json, true);
+                }
+                catch (Exception e)
+                {
+                    Debug.Write(e.Message);
+                }
             }
-            catch (Exception e)
+            else
             {
-                Debug.Write(e.Message);
+                jsonFile =
+                    await storageFolder.GetFileAsync("profile.json");
+                // reading text from file
+                try
+                {
+                    string json = await FileIO.ReadTextAsync(jsonFile);
+                    await DeserializeJSON(json, false);
+                }
+                catch (Exception e)
+                {
+                    Debug.Write(e.Message);
+                }
             }
+            
+            
 
         }
 
@@ -174,14 +237,13 @@ namespace Health_Track.ViewModels
             if (newWeightRecord == null) return;
             if (WeightRecords.Count == 0)
             {
-                //Profile.StartingWeight = newWeightRecord.Weight;
                 Profile.CurrentWeight = newWeightRecord.Weight;
             }
 
-            WeightRecords.Add(newWeightRecord);
+            WeightRecords.Insert(0, newWeightRecord);
 
             // begin to save into JSON
-            await SerializeJSONAsync();
+            await SerializeWeightRecordsAsync();
         }
 
         public void UpdateWeightRecord(WeightRecord newWeightRecord, WeightRecord selectedRecord)
@@ -203,41 +265,10 @@ namespace Health_Track.ViewModels
      .Where(m => m.Date <= today && m.Date > weekAgo)
      .Concat(WeightRecords.Where(d => d.Date > weekAgo).TakeLast(1));
 
-            if (WeightRecords == null || WeightRecords.Count == 0) return; 
+            if (WeightRecords == null || WeightRecords.Count == 0) return;
             var largestWeight = items.Max(weight => weight.Weight);
             var lostTotal = largestWeight - Profile.CurrentWeight;
-            Profile.Weight7Days = lostTotal;
-            //foreach (var weight in items)
-            //{
-            //    //TimeSpan diff = weight.Date - weekAgo;
-            //    //currentLargest = weight.Weight;
-            //    //if (diff.Days > 7 || diff.Days < 0) continue;
-            //    if (currentLargest == Profile.CurrentWeight) continue;
-
-            //    if (largestWeight == 0.0)
-            //    {
-            //        currentLargest = weight.Weight;
-            //        largestWeight = weight.Weight;
-            //    }
-
-
-            //    if (currentLargest > largestWeight)
-            //    {
-            //        largestWeight = currentLargest;
-            //    }
-
-            //}
-            ////TODO: BUG if all dates are the same
-            //if (largestWeight == 0)
-            //{
-            //    Profile.Weight7Days = 0;
-            //}
-            //else
-            //{
-            //    lostTotal = (largestWeight - Profile.CurrentWeight);
-            //    Profile.Weight7Days = lostTotal;
-            //}
-
+            Profile.Weight7Days = lostTotal;   
         }
 
         public void GetWeightMonthAgo()
@@ -258,31 +289,6 @@ namespace Health_Track.ViewModels
             var largestWeight = items.Max(weight => weight.Weight);
             var lostTotal = largestWeight - Profile.CurrentWeight;
             Profile.Weight30Days = lostTotal;
-
-
-
-            //foreach (var weight in WeightRecords)
-            //{
-            //    TimeSpan diff = weight.Date - monthAgo;
-            //    currentWeight = weight.Weight;
-            //    if (diff.Days > 30 || diff.Days < 0) continue;
-            //    if (currentWeight == Profile.CurrentWeight) continue;
-
-            //    if (largestWeight == 0.0)
-            //    {
-            //        currentWeight = weight.Weight;
-            //        largestWeight = weight.Weight;
-            //    }
-
-
-            //    if (currentWeight > largestWeight)
-            //    {
-            //        largestWeight = currentWeight;
-            //    }
-
-            //}
-            //lostTotal = (largestWeight - Profile.CurrentWeight);
-            //Profile.Weight30Days = lostTotal;
         }
         public void GetWeightYearAgo()
         {
@@ -300,57 +306,24 @@ namespace Health_Track.ViewModels
 
             var largestWeight = items.Max(weight => weight.Weight);
             var lostTotal = largestWeight - Profile.CurrentWeight;
-            //foreach (var weight in WeightRecords)
-            //{
-            //    TimeSpan diff = weight.Date - yearAgo;
-            //    currentWeight = weight.Weight;
-            //    if (diff.Days > 365 || diff.Days < 0) continue;
-            //    if (currentWeight == Profile.CurrentWeight) continue;
 
-            //    if (largestWeight == 0.0)
-            //    {
-            //        currentWeight = weight.Weight;
-            //        largestWeight = weight.Weight;
-            //    }
-
-
-            //    if (currentWeight > largestWeight)
-            //    {
-            //        largestWeight = currentWeight;
-            //    }
-
-            //}
-            //lostTotal = (largestWeight - currentWeight);
             Profile.WeightLastYear = lostTotal;
         }
 
         public void GetTotalWeightLoss()
         {
-            var largestWeight = 0.0;
-            var currentWeight = 0.0;
-            var lostTotal = 0.0;
+            if (WeightRecords == null || WeightRecords.Count == 0) return;
 
-            foreach (var weight in WeightRecords)
-            {
-                currentWeight = weight.Weight;
-                if (currentWeight == Profile.CurrentWeight) continue;
-
-                if (largestWeight == 0.0)
-                {
-                    currentWeight = weight.Weight;
-                    largestWeight = weight.Weight;
-                }
-
-
-                if (currentWeight > largestWeight)
-                {
-                    largestWeight = currentWeight;
-                }
-
-            }
-            lostTotal = (largestWeight - currentWeight);
+            var largestWeight = WeightRecords.Max(weight => weight.Weight);
+            var lostTotal = largestWeight - Profile.CurrentWeight;
+            var averageWeight = WeightRecords.Sum(weight => weight.Weight) / WeightRecords.Count;
+            Profile.AverageWeight = averageWeight;
             Profile.TotalLost = lostTotal;
-        
+        }
+
+        public void GetAverageWeightLoss()
+        {
+
         }
     }
 }

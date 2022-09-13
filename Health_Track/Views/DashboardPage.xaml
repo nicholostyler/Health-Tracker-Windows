@@ -86,7 +86,7 @@
                             <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
                                 <TextBlock Text="Last Year" Margin="8,8,0,0"/>
                             </Border>
-                            <TextBlock Text="{Binding LastYearLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding WeightLastYear}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                         <Grid MinHeight="48"
                                   Grid.Column="1"
@@ -98,9 +98,9 @@
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}">
                             <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
-                                <TextBlock Text="Last 7 Days" Margin="8,8,0,0"/>
+                                <TextBlock Text="Average Weight" Margin="8,8,0,0"/>
                             </Border>
-                            <TextBlock Text="Gained 2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding AverageWeight}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                     </Grid>
                 </Grid>

@@ -31,13 +31,14 @@ namespace Health_Track.Models
         public DateTimeOffset Date
         {
             get { return _date; }
-            set 
+            set
             {
                 _date = value;
                 NotifyPropertyChanged(nameof(DateLabel));
             }
         }
 
+        [JsonIgnore]
         public string DateLabel
         {
             get { return _date.ToString("d"); }
