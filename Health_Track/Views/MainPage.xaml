@@ -12,15 +12,15 @@
     muxc:BackdropMaterial.ApplyToRootOrPageBackground="True"
     >
 
-    <Grid x:Name="MainGrid" Background="Transparent">
+    <Grid x:Name="MainGrid">
         
         <muxc:NavigationView Grid.Column="1" x:Name="NavigationViewControl"
                              Header="Home"
-                        IsBackButtonVisible="Auto"
-                        IsBackEnabled="True"
+                       
+                        
             Loaded="NavigationViewControl_Loaded"
             ItemInvoked="NavigationViewControl_ItemInvoked_1"
-            BackRequested="NavigationViewControl_BackRequested_1"
+            
             >
            
             <muxc:NavigationView.MenuItems>

@@ -34,11 +34,8 @@ namespace Health_Track
             // Use this to prevent infinite page creation.
             this.NavigationCacheMode = NavigationCacheMode.Required;
             viewModel = App.Current.Services.GetService<WeightRecordViewModel>();
-            //viewModel = new WeightRecordViewModel();
-            //viewModel = App.Current.Services.GetService<WeightRecordViewModel>();
-            //viewModel.AddWeightRecord(new WeightRecord { Date = DateTime.Now, Weight = 200.0 });
+
             this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>();
-            //LogbookListView.DataContext = viewModel.WeightRecords.sort
             // set listview to first item in WeightRecords
             LogbookListView.SelectedIndex = 0;
         }
@@ -86,7 +83,6 @@ namespace Health_Track
             DateTimeOffset datePicker = (dateStack.Children[1] as DatePicker).Date;
             var newWeight2 = new Models.WeightRecord { Date = datePicker, Weight = Double.Parse(newWeight) };
             var newSelectedItem = LogbookListView.SelectedItem as WeightRecord;
-            //viewModel.UpdateWeightRecord(newWeight2, newSelectedItem);
             App.Current.Services.GetService<WeightRecordViewModel>().UpdateWeightRecord(newWeight2, newSelectedItem);
             
         }

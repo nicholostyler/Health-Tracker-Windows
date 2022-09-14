@@ -39,12 +39,12 @@ namespace Health_Track
             if (Double.TryParse(txtNewWeight.Text, out tryNewWeight))
             {
                 NewWeight = tryNewWeight;
+                NewWeight = Double.Parse(txtNewWeight.Text);
             }
             else
             {
 
             }
-            NewWeight = Double.Parse(txtNewWeight.Text);
         }
 
         private void datePicker_DateChanged(object sender, DatePickerValueChangedEventArgs e)

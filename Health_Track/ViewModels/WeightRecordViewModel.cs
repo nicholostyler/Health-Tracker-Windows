@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -33,62 +34,31 @@ namespace Health_Track.ViewModels
             }
         }
 
-        public WeightRecord _selectedWeightRecord;
-        public WeightRecord SelectedWeightRecord
-        {
-            get { return _selectedWeightRecord; }
-            set
-            {
-                _selectedWeightRecord = value;
-                NotifyPropertyChanged("SelectedWeightRecord");
-            }
-        }
-
-
         public WeightRecordViewModel()
         {
             WeightRecords = new ObservableCollection<WeightRecord>();
             Profile = new Profile();
-            //week ago dates
-            var weekAgo1 = DateTimeOffset.Now.AddDays(-4);
-            var weekAgo2 = DateTimeOffset.Now.AddDays(-3);
-            // Month ago dates
-            var monthAgo1 = DateTimeOffset.Now.AddDays(-10);
-            var monthAgo2 = DateTimeOffset.Now.AddDays(-11);
-            // Year ago dates
-            var yearAgo1 = DateTimeOffset.Now.AddDays(-90);
-            var yearAgo2 = DateTimeOffset.Now.AddDays(-120);
-            /*
-            WeightRecords.Add(new WeightRecord { Weight = 245.0, Date = yearAgo1 });
-            WeightRecords.Add(new WeightRecord { Weight = 240.0, Date = yearAgo2 });
-            WeightRecords.Add(new WeightRecord { Weight = 215.0, Date = monthAgo1 });
-            WeightRecords.Add(new WeightRecord { Weight = 213.0, Date = monthAgo2 });
-            WeightRecords.Add(new WeightRecord { Weight = 210.0, Date = weekAgo1 });
-            WeightRecords.Add(new WeightRecord { Weight = 209.0, Date = weekAgo2 });
-            */
-            Profile.GoalWeight = 180.0;
-            Profile.GoalDate = DateTimeOffset.Now.AddYears(1);
-            Profile.Name = "Nicholos Tyler";
-            Profile.GoalRate = 1;
         }
 
         public async Task InitAsync()
         {
-            //await SerializeJSONAsync();
+            // Read the WeightRecords.json
             await ReadFileFromSystem(true);
+            // read the profile.json
             await ReadFileFromSystem(false);
-            var sortableCollection = new List<WeightRecord>(WeightRecords);
-            sortableCollection.Sort((a, b) => a.Weight.CompareTo(b.Weight));
-            for (int i = 0; i < sortableCollection.Count; i++)
-            {
-                WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
-                await SerializeWeightRecordsAsync();
-            }
-            //GetWeightWeekAgo();
-            //GetWeightMonthAgo();
-            //GetWeightYearAgo();
-            //GetTotalWeightLoss();
-            //await SerializeProfileAsync();
+            // Are there records?
+            if (!WeightRecords.Any()) return;
+
+            // Sort the collection that was read if there are any elements
+
+            //var sortableCollection = new List<WeightRecord>(WeightRecords);
+            //sortableCollection.Sort((a, b) => a.Weight.CompareTo(b.Weight));
+            //for (int i = 0; i < sortableCollection.Count; i++)
+            //{
+            //    WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
+            //    await SerializeWeightRecordsAsync();
+            //}
+            
         }
 
         public async Task SerializeWeightRecordsAsync()
@@ -134,14 +104,20 @@ namespace Health_Track.ViewModels
                 // iterate through weights and add them to WeightRecords
                 foreach (var weight in weights)
                 {
-                    await AddWeightRecord(weight);
+                    // FIXME
+                    // Avoid multiple rewrites given new AddWeightRecord Feature
+                    if (weight == null) return;
+                    WeightRecords.Insert(0, weight);
+                    //await AddWeightRecord(weight);
                 }
                 Profile.StartingWeight = weights[weights.Length - 1].Weight;
+                Profile.CurrentWeight = WeightRecords[0].Weight;
 
             }
             else
             {
                 var profile = JsonSerializer.Deserialize<Profile>(json, options);
+                if (profile == null) return;
                 // Set the variables manually as they don't fire when deserialize for Label variables
                 // TODO: FIX?
                 Profile.Weight7Days = profile.Weight7Days;
@@ -150,6 +126,10 @@ namespace Health_Track.ViewModels
                 Profile.CurrentWeight = profile.CurrentWeight;
                 Profile.TotalLost = profile.TotalLost;
                 Profile.AverageWeight = profile.AverageWeight;
+                Profile.GoalWeight = profile.GoalWeight;
+                Profile.Name = profile.Name;
+                Profile.TotalLost = profile.TotalLost;
+                Profile.GoalRate = profile.GoalRate;
                 Profile = profile;
             }
 
@@ -190,6 +170,8 @@ namespace Health_Track.ViewModels
             StorageFile jsonFile;
             if (isRecords)
             {
+                // CHECK IF WEIGHT_RECORD JSON IS THERE.
+                if (!File.Exists(storageFolder.Path + "\\weight_records.json")) return;
                  jsonFile =
                 await storageFolder.GetFileAsync("weight_records.json");
                 // reading text from file
@@ -218,8 +200,7 @@ namespace Health_Track.ViewModels
                     Debug.Write(e.Message);
                 }
             }
-            
-            
+                    
 
         }
 
@@ -242,9 +223,16 @@ namespace Health_Track.ViewModels
 
             WeightRecords.Insert(0, newWeightRecord);
 
+            // Calculate new statistics
+            GetWeightMonthAgo();
+            GetWeightWeekAgo();
+            GetWeightYearAgo();
+            GetTotalWeightLoss();
             // begin to save into JSON
             await SerializeWeightRecordsAsync();
+            await SerializeProfileAsync();
         }
+
 
         public void UpdateWeightRecord(WeightRecord newWeightRecord, WeightRecord selectedRecord)
         {
@@ -319,11 +307,6 @@ namespace Health_Track.ViewModels
             var averageWeight = WeightRecords.Sum(weight => weight.Weight) / WeightRecords.Count;
             Profile.AverageWeight = averageWeight;
             Profile.TotalLost = lostTotal;
-        }
-
-        public void GetAverageWeightLoss()
-        {
-
         }
     }
 }

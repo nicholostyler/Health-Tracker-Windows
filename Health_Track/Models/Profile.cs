@@ -65,9 +65,9 @@ namespace Health_Track.Models
             {
                 _currentWeight = value;
                 var profile = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
-                var weightMonth = profile.CurrentWeight - (4 * profile.GoalRate);
-                var weight3Months = profile.CurrentWeight - ((4 * 3) * profile.GoalRate);
-                var weight6Months = profile.CurrentWeight - ((4 * 6) * profile.GoalRate);
+                var weightMonth = profile._currentWeight - (4 * profile._goalRate);
+                var weight3Months = profile._currentWeight - ((4 * 3) * profile._goalRate);
+                var weight6Months = profile._currentWeight - ((4 * 6) * profile._goalRate);
 
                 _progressMonth = weightMonth;
                 _progress3Months = weight3Months;

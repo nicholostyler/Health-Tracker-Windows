@@ -1,4 +1,5 @@
 ﻿using Health_Track.ViewModels;
+using Health_Track.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,6 @@ namespace Health_Track
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
-            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active

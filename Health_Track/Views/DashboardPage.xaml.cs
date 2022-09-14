@@ -37,10 +37,14 @@ namespace Health_Track
             
             this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
             this.NavigationCacheMode = NavigationCacheMode.Required;
-
-            //Populate your progress card
-            //CalculatePercentage();
        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
+
+        }
 
         public void PopulateProgressCard()
         {
@@ -53,16 +57,6 @@ namespace Health_Track
             ProgressMonthDateLabel = dateMonth.ToString("yyyy-MM-dd");
             Progress3MonthDateLabel = date3Months.ToString("yyyy-MM-dd");
             Progress6MonthDateLabel = date6Months.ToString("yyyy-MM-dd");
-        }
-
-        public void CalculatePercentage()
-        {
-            var profile = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
-            var currentWeight = profile.CurrentWeight;
-            var goalWeight = profile.GoalWeight;
-            var amountToLose = profile.StartingWeight - profile.GoalWeight;
-            var percentage = profile.TotalLost / amountToLose;
-            ProgressBar.Value = percentage * 100;
         }
     }
 }

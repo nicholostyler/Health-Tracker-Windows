@@ -193,13 +193,13 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <ToggleButton  Grid.Column="0" Height="50" Background="{ThemeResource SystemAccentColor}" Margin="0,0,12,0" MaxWidth="100">
+                            <ToggleButton  Grid.Column="0" Height="50" MinWidth="100" Background="{ThemeResource SystemAccentColor}" Margin="0,0,12,0" >
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock Text="Goal Rate" Foreground="{ThemeResource SystemAltHighColor}"/>
                                     <TextBlock Text="{Binding GoalRateLabel}" Foreground="{ThemeResource SystemAltHighColor}"/>
                                 </StackPanel>
                             </ToggleButton>
-                            <ToggleButton Grid.Column="1" Height="50" MaxWidth="100">
+                            <ToggleButton Grid.Column="1" Height="50" MaxWidth="100" IsEnabled="False">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock Text="Current Rate"/>
                                     <TextBlock Text="2 lb"/>
