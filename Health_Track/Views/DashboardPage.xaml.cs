@@ -42,6 +42,7 @@ namespace Health_Track
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            App.Current.Services.GetRequiredService<WeightRecordViewModel>().ResetProgress();
             this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
 
         }

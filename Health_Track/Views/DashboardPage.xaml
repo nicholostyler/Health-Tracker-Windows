@@ -31,13 +31,13 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid MinHeight="48"
                                   Grid.Column="0"
@@ -48,10 +48,14 @@
                                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
-                                <TextBlock Text="Last 7 Days" Margin="8,8,0,0"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5">
+                                <TextBlock Text="7 Days" Margin="8,8,0,0"/>
                             </Border>
-                            <TextBlock Text="{Binding Last7DaysLabel}"  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="{Binding Last7DaysLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
 
                         <Grid MinHeight="48"
@@ -63,10 +67,14 @@
                                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
-                                <TextBlock Text="Last 30 Days" Margin="8,8,0,0"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5">
+                                <TextBlock Text="30 Days" Margin="8,8,0,0"/>
                             </Border>
-                            <TextBlock Text="{Binding Last30DaysLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="{Binding Last30DaysLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                     </Grid>
                     <Grid Grid.Column="1">
@@ -83,10 +91,14 @@
                                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
-                                <TextBlock Text="Last Year" Margin="8,8,0,0"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5" >
+                                <TextBlock Text="Year" Margin="8,8,0,0"/>
                             </Border>
-                            <TextBlock Text="{Binding WeightLastYear}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="{Binding LastYearLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                         <Grid MinHeight="48"
                                   Grid.Column="1"
@@ -96,11 +108,17 @@
                                   Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                   BorderThickness="1"
+                            
+                              
                                   CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
-                                <TextBlock Text="Average Weight" Margin="8,8,0,0"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5" >
+                                <TextBlock Text="Average" Margin="8,8,0,0"/>
                             </Border>
-                            <TextBlock Text="{Binding AverageWeight}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="{Binding AverageWeight}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -132,7 +150,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" VerticalAlignment="Center">
+                        <Grid Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
@@ -141,7 +159,7 @@
                             <TextBlock Text="{Binding CurrentWeightLabel}" Grid.Row="1"/>
                         </Grid>
 
-                        <Grid Grid.Column="1">
+                        <Grid Grid.Column="1" HorizontalAlignment="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
@@ -149,7 +167,7 @@
                             <TextBlock Text="Lost" Grid.Row="0"/>
                             <TextBlock Text="{Binding TotalLostLabel}" Grid.Row="1"/>
                         </Grid>
-                        <Grid Grid.Column="2">
+                        <Grid Grid.Column="2" HorizontalAlignment="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
@@ -193,18 +211,13 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <ToggleButton  Grid.Column="0" Height="50" MinWidth="100" Background="{ThemeResource SystemAccentColor}" Margin="0,0,12,0" >
+                            <Border Grid.ColumnSpan="2" Height="50" Background="{ThemeResource SystemAccentColor}" Margin="0,0,12,0" HorizontalAlignment="Center" MinWidth="100">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock Text="Goal Rate" Foreground="{ThemeResource SystemAltHighColor}"/>
                                     <TextBlock Text="{Binding GoalRateLabel}" Foreground="{ThemeResource SystemAltHighColor}"/>
                                 </StackPanel>
-                            </ToggleButton>
-                            <ToggleButton Grid.Column="1" Height="50" MaxWidth="100" IsEnabled="False">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="Current Rate"/>
-                                    <TextBlock Text="2 lb"/>
-                                </StackPanel>
-                            </ToggleButton>
+                            </Border>
+                            
                         </Grid>
                     </Grid>
                     <Grid Grid.Row="2">

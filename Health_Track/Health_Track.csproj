@@ -145,6 +145,9 @@
     </Compile>
     <Compile Include="ViewModels\ProfileViewModel.cs" />
     <Compile Include="ViewModels\WeightRecordViewModel.cs" />
+    <Compile Include="Views\WelcomeInformationView.xaml.cs">
+      <DependentUpon>WelcomeInformationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\WelcomeView.xaml.cs">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
     </Compile>
@@ -195,6 +198,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WelcomeInformationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

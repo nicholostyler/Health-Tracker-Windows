@@ -42,15 +42,13 @@ namespace Health_Track
             
         }
 
-
-
         private void NavigationViewControl_Loaded(object sender, RoutedEventArgs args)
         {
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
-            NavView_Navigate("home", new EntranceNavigationTransitionInfo());
+            NavView_Navigate("home");
         }
 
-        private void NavView_Navigate(string navItemTag, EntranceNavigationTransitionInfo transitionInfo)
+        private void NavView_Navigate(string navItemTag)
         {
             Type _page = null;
             if (navItemTag == "settings")
@@ -69,7 +67,7 @@ namespace Health_Track
             // Only navigate if the selected page isn't currently loaded.
             if (!(_page is null) && !Type.Equals(preNavPageType, _page))
             {
-                contentFrame.Navigate(_page, null, transitionInfo);
+                contentFrame.Navigate(_page, null);
             }
         }
 
@@ -79,13 +77,13 @@ namespace Health_Track
             if (args.IsSettingsInvoked == true)
             {
                 NavigationViewControl.Header = "Settings";
-                NavView_Navigate("settings", (EntranceNavigationTransitionInfo)args.RecommendedNavigationTransitionInfo);
+                NavView_Navigate("settings");
             }
             else if (args.InvokedItemContainer != null)
             {
                 var navItemTag = args.InvokedItemContainer.Tag.ToString();
                 NavigationViewControl.Header = char.ToUpper(navItemTag[0]) + navItemTag.Substring(1);
-                NavView_Navigate(navItemTag, (EntranceNavigationTransitionInfo)args.RecommendedNavigationTransitionInfo);
+                NavView_Navigate(navItemTag);
             }
         }
 
@@ -115,13 +113,13 @@ namespace Health_Track
             if (args.IsSettingsInvoked == true)
             {
                 NavigationViewControl.Header = "Settings";
-                NavView_Navigate("settings", (EntranceNavigationTransitionInfo)args.RecommendedNavigationTransitionInfo);
+                NavView_Navigate("settings");
             }
             else if (args.InvokedItemContainer != null)
             {
                 var navItemTag = args.InvokedItemContainer.Tag.ToString();
                 NavigationViewControl.Header = char.ToUpper(navItemTag[0]) + navItemTag.Substring(1);
-                NavView_Navigate(navItemTag, (EntranceNavigationTransitionInfo)args.RecommendedNavigationTransitionInfo);
+                NavView_Navigate(navItemTag);
             }
         }
 

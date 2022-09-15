@@ -34,11 +34,20 @@ namespace Health_Track
             lossRate.Add(2);
             lossRate.Add(3);
             lossRate.Add(4);
-            lossRate.Add(5);
-            lossRate.Add(6);
-            lossRate.Add(7);
-            lossRate.Add(8);
+        }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
+
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            //double goalWeight = Double.Parse(txtGoalWeight.Text);
+            //string name = 
+            //App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.GoalWeight = goalWeight;
         }
     }
 }

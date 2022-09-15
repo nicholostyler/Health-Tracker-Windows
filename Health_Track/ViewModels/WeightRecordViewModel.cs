@@ -51,13 +51,13 @@ namespace Health_Track.ViewModels
 
             // Sort the collection that was read if there are any elements
 
-            //var sortableCollection = new List<WeightRecord>(WeightRecords);
-            //sortableCollection.Sort((a, b) => a.Weight.CompareTo(b.Weight));
-            //for (int i = 0; i < sortableCollection.Count; i++)
-            //{
-            //    WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
-            //    await SerializeWeightRecordsAsync();
-            //}
+            var sortableCollection = new List<WeightRecord>(WeightRecords);
+            sortableCollection.Sort((a, b) => a.Weight.CompareTo(b.Weight));
+            for (int i = 0; i < sortableCollection.Count; i++)
+            {
+                WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
+                await SerializeWeightRecordsAsync();
+            }
             
         }
 
@@ -132,8 +132,6 @@ namespace Health_Track.ViewModels
                 Profile.GoalRate = profile.GoalRate;
                 Profile = profile;
             }
-
-
         }
 
         public async Task WriteFileToSystem(string content, bool isRecords)
@@ -216,10 +214,8 @@ namespace Health_Track.ViewModels
         public async Task AddWeightRecord(WeightRecord newWeightRecord)
         {
             if (newWeightRecord == null) return;
-            if (WeightRecords.Count == 0)
-            {
-                Profile.CurrentWeight = newWeightRecord.Weight;
-            }
+            Profile.CurrentWeight = newWeightRecord.Weight;
+            
 
             WeightRecords.Insert(0, newWeightRecord);
 
@@ -307,6 +303,16 @@ namespace Health_Track.ViewModels
             var averageWeight = WeightRecords.Sum(weight => weight.Weight) / WeightRecords.Count;
             Profile.AverageWeight = averageWeight;
             Profile.TotalLost = lostTotal;
+        }
+
+        public void ResetProgress()
+        {
+            var currentWeight = Profile.CurrentWeight;
+            var goalWeight = Profile.GoalWeight;
+            var amountToLose = Profile.StartingWeight - Profile.GoalWeight;
+            var percentage = Profile.GoalWeight / Profile.CurrentWeight;
+            Profile.GoalPercentage = percentage * 100;
+            //NotifyPropertyChanged("GoalPercentage");
         }
     }
 }

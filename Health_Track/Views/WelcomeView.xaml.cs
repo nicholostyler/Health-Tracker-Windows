@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -26,6 +27,7 @@ namespace Health_Track.Views
     public sealed partial class WelcomeView : Page
     {
         double weight = 0.0;
+        double currentWeight = 0.0;
         string name = string.Empty;
         DateTimeOffset? date;
         ObservableCollection<int> lossRate = new ObservableCollection<int>();
@@ -37,10 +39,6 @@ namespace Health_Track.Views
             lossRate.Add(2);
             lossRate.Add(3);
             lossRate.Add(4);
-            lossRate.Add(5);
-            lossRate.Add(6);
-            lossRate.Add(7);
-            lossRate.Add(8);
         }
 
         private async void FinishBtn_Click(object sender, RoutedEventArgs e)
@@ -58,7 +56,17 @@ namespace Health_Track.Views
             App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.GoalDate = date.Value;
             App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.GoalRate = lossRate[cbRate.SelectedIndex];
             App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.GoalWeight = weight;
+            App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.CurrentWeight = currentWeight;
+
+            // add weight to viewmodel
+            await App.Current.Services.GetRequiredService<WeightRecordViewModel>().AddWeightRecord(new WeightRecord { Date = DateTimeOffset.Now, Weight = currentWeight });
             await App.Current.Services.GetRequiredService<WeightRecordViewModel>().SerializeProfileAsync();
+
+            // Save App setting to not show this again
+            ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values["isStarter"] = "false";
+
+
 
             // OK to navigate to MainPage
             this.Frame.Navigate(typeof(MainPage));
@@ -87,7 +95,7 @@ namespace Health_Track.Views
         {
             bool isValid = false;
 
-            if (double.TryParse(txtGoalWeight.Text, out weight))
+            if (double.TryParse(txtGoalWeight.Text, out weight) && double.TryParse(txtCurrentWeight.Text, out currentWeight))
             {
                 isValid = true;
                 return isValid;

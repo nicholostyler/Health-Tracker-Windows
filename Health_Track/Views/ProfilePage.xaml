@@ -59,7 +59,7 @@
             <Grid>
 
                 <TextBlock Text="Goal Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBox Text="{Binding GoalWeight, Mode=TwoWay}" PlaceholderText="Goal Weight" MinWidth="200" HorizontalAlignment="Right"/>
+                <TextBox x:Name="txtGoalWeight" Text="{Binding GoalWeight, Mode=TwoWay}" PlaceholderText="Goal Weight" MinWidth="200" HorizontalAlignment="Right"/>
             </Grid>
         </Grid>
         <Grid
@@ -94,5 +94,6 @@
                 <ComboBox ItemsSource="{x:Bind lossRate}" SelectedItem="{Binding GoalRate, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="Right"/>
             </Grid>
         </Grid>
+        <Button x:Name="btnSave" Click="btnSave_Click" HorizontalAlignment="Right" Content="Save" Margin="0,12,0,0" Width="100" Height="35" Background="{ThemeResource SystemAccentColor}"/>
     </StackPanel>
 </Page>

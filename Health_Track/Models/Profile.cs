@@ -50,6 +50,7 @@ namespace Health_Track.Models
             set
             {
                 _goalWeight = value;
+                ResetProgress();
                 NotifyPropertyChanged(nameof(TargetWeightLabel));
 
             }
@@ -64,19 +65,11 @@ namespace Health_Track.Models
             set
             {
                 _currentWeight = value;
-                var profile = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
-                var weightMonth = profile._currentWeight - (4 * profile._goalRate);
-                var weight3Months = profile._currentWeight - ((4 * 3) * profile._goalRate);
-                var weight6Months = profile._currentWeight - ((4 * 6) * profile._goalRate);
-
-                _progressMonth = weightMonth;
-                _progress3Months = weight3Months;
-                _progress6Months = weight6Months;
+                ResetProgress();
+                ResetGoals();
 
                 NotifyPropertyChanged(nameof(CurrentWeightLabel));
-                NotifyPropertyChanged(nameof(ProgressMonthLabel));
-                NotifyPropertyChanged(nameof(Progress3MonthLabel));
-                NotifyPropertyChanged(nameof(Progress6MonthLabel));
+                
             }
         }
         [JsonPropertyName("Weight7Days")]
@@ -113,7 +106,7 @@ namespace Health_Track.Models
             set
             {
                 _weightLastYear = value;
-                NotifyPropertyChanged(nameof(WeightLastYear));
+                NotifyPropertyChanged(nameof(LastYearLabel));
             }
         }
         [JsonPropertyName("StartingWeight")]
@@ -138,13 +131,9 @@ namespace Health_Track.Models
             set
             {
                 _totalLost = value;
-                var currentWeight = _currentWeight;
-                var goalWeight = _goalWeight;
-                var amountToLose = _startingWeight - _goalWeight;
-                var percentage = _goalWeight / _currentWeight;
-                _goalPercentage = percentage * 100;
+                ResetProgress();
                 NotifyPropertyChanged(nameof(TotalLostLabel));
-                NotifyPropertyChanged("GoalPercentage");
+                
             }
         }
 
@@ -157,8 +146,9 @@ namespace Health_Track.Models
             set
             {
                 _goalRate = value;
+                ResetGoals();
                 NotifyPropertyChanged(nameof(GoalRateLabel));
-                
+
             }
         }
 
@@ -193,8 +183,7 @@ namespace Health_Track.Models
         }
         [JsonIgnore]
         public string Last7DaysLabel
-        {
-            
+        { 
             get {
                 if (_weight7Days > 0)
                     return _weight7Days + " lost";
@@ -332,8 +321,34 @@ namespace Health_Track.Models
 
             if (PropertyChanged != null)
             {
+                //ResetProgress();
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
+        }
+
+        private void ResetProgress()
+        {
+            var currentWeight = _currentWeight;
+            var goalWeight = _goalWeight;
+            var amountToLose = _startingWeight - _goalWeight;
+            var percentage = _goalWeight / _currentWeight;
+            _goalPercentage = percentage * 100;
+            NotifyPropertyChanged("GoalPercentage");
+        }
+
+        private void ResetGoals()
+        {
+            var weightMonth = CurrentWeight - (4 * GoalRate);
+            var weight3Months = CurrentWeight - ((4 * 3) * GoalRate);
+            var weight6Months = CurrentWeight - ((4 * 6) * GoalRate);
+
+            ProgressMonth = weightMonth;
+            Progress3Months = weight3Months;
+            Progress6Months = weight6Months;
+
+            NotifyPropertyChanged(nameof(ProgressMonthLabel));
+            NotifyPropertyChanged(nameof(Progress3MonthLabel));
+            NotifyPropertyChanged(nameof(Progress6MonthLabel));
         }
     }
 }

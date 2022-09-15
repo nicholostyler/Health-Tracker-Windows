@@ -10,13 +10,14 @@
     Loaded="Page_Loaded"
     mc:Ignorable="d"
     muxc:BackdropMaterial.ApplyToRootOrPageBackground="True"
+    
     >
 
     <Grid x:Name="MainGrid">
         
         <muxc:NavigationView Grid.Column="1" x:Name="NavigationViewControl"
                              Header="Home"
-                       
+                       PaneDisplayMode="Top"
                         
             Loaded="NavigationViewControl_Loaded"
             ItemInvoked="NavigationViewControl_ItemInvoked_1"

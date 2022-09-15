@@ -10,7 +10,7 @@
 
     <StackPanel VerticalAlignment="Center">
         
-        <StackPanel>
+        <StackPanel Margin="0,0,0,20">
             <TextBlock Text="Health Tracker"  Margin="12" HorizontalAlignment="Center"  FontSize="40"/>
             <TextBlock Text="Track your weight from start to finish." HorizontalAlignment="Center" FontSize="26"/>
         </StackPanel>
@@ -27,7 +27,20 @@
                           >
                 <Grid>
                         <TextBlock Text="Name" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                    <TextBox x:Name="txtName" MinWidth="{ThemeResource DatePickerThemeMinWidth}" HorizontalAlignment="Right"/>
+                    <TextBox x:Name="txtName" PlaceholderText="ex: John" MinWidth="{ThemeResource DatePickerThemeMinWidth}" HorizontalAlignment="Right"/>
+                </Grid>
+            </Grid>
+            <Grid
+                          Margin="0,12,0,0"
+                          MinHeight="48"
+                                  Padding="16"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  
+                          >
+                <Grid>
+                    <TextBlock Text="Current Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <TextBox x:Name="txtCurrentWeight" PlaceholderText="ex: 230.5" MinWidth="{ThemeResource DatePickerThemeMinWidth}" HorizontalAlignment="Right"/>
                 </Grid>
             </Grid>
             <Grid
@@ -40,7 +53,7 @@
                           >
                 <Grid>
                     <TextBlock  Text="Goal Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                    <TextBox x:Name="txtGoalWeight" MinWidth="{ThemeResource DatePickerThemeMinWidth}" HorizontalAlignment="Right"/>
+                    <TextBox x:Name="txtGoalWeight" PlaceholderText="ex: 190.8" MinWidth="{ThemeResource DatePickerThemeMinWidth}" HorizontalAlignment="Right"/>
                 </Grid>
             </Grid>
             <Grid
