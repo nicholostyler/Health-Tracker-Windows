@@ -5,6 +5,7 @@
     xmlns:local="using:Health_Track"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     Background="Transparent">
 
@@ -56,28 +57,27 @@
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}"
                           >
+
             <Grid>
 
                 <TextBlock Text="Goal Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                 <TextBox x:Name="txtGoalWeight" Text="{Binding GoalWeight, Mode=TwoWay}" PlaceholderText="Goal Weight" MinWidth="200" HorizontalAlignment="Right"/>
             </Grid>
+
         </Grid>
-        <Grid
-                          Margin="0,12,0,0"
-                          MinHeight="48"
-                                  Padding="16"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Stretch"
-                                  Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                  BorderThickness="1"
-                                  CornerRadius="{StaticResource ControlCornerRadius}"
-                          >
-            <Grid >
-                <TextBlock  Text="Weight Goal" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <DatePicker Date="{Binding GoalDate, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="Right"/>
-            </Grid>
-        </Grid>
+        <muxc:Expander
+            Margin="0,12,0,0"
+            MinHeight="60"
+                IsExpanded="False"
+                ExpandDirection="Down"
+                Header="Goal Date"
+                HorizontalAlignment="Stretch"
+                >
+                <muxc:Expander.Content>
+                    <DatePicker Date="{Binding GoalDate, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="Right" Margin="24,0,0,0"/>
+                </muxc:Expander.Content>
+            </muxc:Expander>
+
         <Grid
                           Margin="0,12,0,0"
                           MinHeight="48"

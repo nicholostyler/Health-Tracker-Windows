@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -85,6 +86,22 @@ namespace Health_Track
             var newSelectedItem = LogbookListView.SelectedItem as WeightRecord;
             App.Current.Services.GetService<WeightRecordViewModel>().UpdateWeightRecord(newWeight2, newSelectedItem);
             
+        }
+
+        private void StackPanel_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            {
+                var p = e.GetCurrentPoint((UIElement)sender);
+                if (p.Properties.IsLeftButtonPressed)
+                {
+
+                }
+                else if (p.Properties.IsRightButtonPressed)
+                {
+                    FlyoutBase.ShowAttachedFlyout((FrameworkElement)sender);
+                }
+            }
         }
     }
 }

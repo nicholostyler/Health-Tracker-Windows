@@ -13,7 +13,12 @@
             
             <controls:ListDetailsView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Margin="0,8">
+                    <StackPanel Margin="0,8" PointerPressed="StackPanel_PointerPressed">
+                        <FlyoutBase.AttachedFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Delete"/>
+                            </MenuFlyout>
+                        </FlyoutBase.AttachedFlyout>
                         <TextBlock Text="{Binding Weight}"/>
                         <TextBlock Text="{Binding DateLabel}"/>
                     </StackPanel>
@@ -36,8 +41,8 @@
                             <DatePicker x:Name="pickerDetailDate" MinWidth="200" Margin="12,0,0,0" Date="{Binding Date}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                            <Button Name="btnEditCancel" Content="Cancel" Click="btnEditCancel_Click"/>
-                            <Button Name="btnSave" Content="Save" IsEnabled="{Binding SaveEnabled}" Click="btnSave_Click"/>
+                            <Button Name="btnDelete" Content="Delete" Click="btnEditCancel_Click" Background="Red" MinWidth="50" Margin="0,0,12,0" />
+                            <Button Name="btnSave" Content="Save" IsEnabled="{Binding SaveEnabled}" Click="btnSave_Click" MinWidth="50"/>
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>
