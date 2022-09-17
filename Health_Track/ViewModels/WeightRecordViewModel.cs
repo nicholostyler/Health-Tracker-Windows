@@ -13,6 +13,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Health_Track.ViewModels
 {
@@ -211,30 +213,88 @@ namespace Health_Track.ViewModels
             }
         }
 
-        public async Task AddWeightRecord(WeightRecord newWeightRecord)
+        private bool DateIsInList(DateTimeOffset checkDate)
+        {
+            bool IsInList = WeightRecords.Any(
+                weight => weight.Date.Day == checkDate.Day
+            && weight.Date.Month == checkDate.Month 
+            && weight.Date.Year == checkDate.Year);
+
+            return IsInList;
+        }
+
+        public async Task AddWeightRecord(WeightRecord newWeightRecord, XamlRoot context)
         {
             if (newWeightRecord == null) return;
-            Profile.CurrentWeight = newWeightRecord.Weight;
+
+            // TODO: Make sure you don't add a date that is already there
             
+            if (DateIsInList(newWeightRecord.Date))
+            {
+                // Generate dialog
+                ContentDialog dialog = new ContentDialog();
+
+                // XAMLRoot must be set in the case of a contentdialog running in a desktop app
+                if (context == null) return;
+                dialog.XamlRoot = context;
+                dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+                dialog.Title = "Overwrite Existing?";
+                dialog.PrimaryButtonText = "Save";
+                dialog.SecondaryButtonText = "Cancel";
+                dialog.DefaultButton = ContentDialogButton.Primary;
+                dialog.Content = new TextBlock { Text = newWeightRecord.DateLabel };
+                var result = await dialog.ShowAsync();
+
+                // TODO: Cancel if cancel is hit.
+
+            }
+            Profile.CurrentWeight = newWeightRecord.Weight;
+
 
             WeightRecords.Insert(0, newWeightRecord);
 
             // Calculate new statistics
-            GetWeightMonthAgo();
-            GetWeightWeekAgo();
-            GetWeightYearAgo();
-            GetTotalWeightLoss();
+            GenerateDashboard();
             // begin to save into JSON
             await SerializeWeightRecordsAsync();
             await SerializeProfileAsync();
         }
 
+        private void GenerateDashboard()
+        {
+            GetWeightMonthAgo();
+            GetWeightWeekAgo();
+            GetWeightYearAgo();
+            GetTotalWeightLoss();
+        }
 
-        public void UpdateWeightRecord(WeightRecord newWeightRecord, WeightRecord selectedRecord)
+        public async Task UpdateWeightRecord(WeightRecord newWeightRecord, WeightRecord selectedRecord)
         {
             var oldRecords = WeightRecords.FirstOrDefault(weight => weight.Weight == selectedRecord.Weight);
             oldRecords.Weight = newWeightRecord.Weight;
             oldRecords.Date = newWeightRecord.Date;
+            GenerateDashboard();
+
+            await SerializeWeightRecordsAsync();
+            await SerializeProfileAsync();
+        }
+
+        public async Task DeleteWeightRecord(int index)
+        {
+            // if index is not valid
+            if (index < 0) return;
+
+            WeightRecords.RemoveAt(index);
+            
+            // If first in list -- make current weight next in line
+            if (index == 0)
+            {
+                Profile.CurrentWeight = WeightRecords[0].Weight;
+            }
+
+            await SerializeWeightRecordsAsync();
+            await SerializeProfileAsync();
+            GenerateDashboard();
         }
 
         public void GetWeightWeekAgo()

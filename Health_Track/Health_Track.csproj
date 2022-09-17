@@ -136,6 +136,9 @@
     <Compile Include="Views\NewWeightRecordDialogContent.xaml.cs">
       <DependentUpon>NewWeightRecordDialogContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\OverwriteDialogView.xaml.cs">
+      <DependentUpon>OverwriteDialogView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProfilePage.xaml.cs">
       <DependentUpon>ProfilePage.xaml</DependentUpon>
     </Compile>
@@ -190,6 +193,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\NewWeightRecordDialogContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OverwriteDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

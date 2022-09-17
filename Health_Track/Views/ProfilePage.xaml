@@ -9,10 +9,11 @@
     mc:Ignorable="d"
     Background="Transparent">
 
-    <StackPanel Margin="12,12,12,0" >
-        <TextBlock Text="Your Info" Margin="0,12,12,12" FontWeight="Bold"/>
+    <ScrollViewer>
+        <StackPanel Margin="12,12,12,0" >
+            <TextBlock Text="Your Info" Margin="0,12,12,12" FontWeight="Bold"/>
 
-        <Grid
+            <Grid
                           Margin="0,12,0,0"
                           MinHeight="48"
                                   Padding="16"
@@ -23,13 +24,13 @@
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}"
                           >
-            <Grid>
-                
-                <TextBlock Text="Name" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBox Text="{Binding Name, Mode=TwoWay}" PlaceholderText="Your Name" MinWidth="200" HorizontalAlignment="Right"/>
+                <Grid>
+
+                    <TextBlock Text="Name" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <TextBox Text="{Binding Name, Mode=TwoWay}" PlaceholderText="Your Name" MinWidth="200" HorizontalAlignment="Right"/>
+                </Grid>
             </Grid>
-        </Grid>
-        <Grid
+            <Grid
                           Margin="0,12,0,0"
                           MinHeight="48"
                                   Padding="16"
@@ -40,13 +41,13 @@
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}"
                           >
-            <Grid >
-                <TextBlock Text="Current Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBox IsEnabled="False" Text="{Binding CurrentWeight}" MinWidth="200" HorizontalAlignment="Right"/>
+                <Grid >
+                    <TextBlock Text="Current Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <TextBox IsEnabled="False" Text="{Binding CurrentWeight}" MinWidth="200" HorizontalAlignment="Right"/>
+                </Grid>
             </Grid>
-        </Grid>
-        <TextBlock Text="Goals" Margin="0,12,12,12" FontWeight="Bold"/>
-        <Grid
+            <TextBlock Text="Goals" Margin="0,12,12,12" FontWeight="Bold"/>
+            <Grid
                           Margin="0,12,0,0"
                           MinHeight="48"
                                   Padding="16"
@@ -58,14 +59,14 @@
                                   CornerRadius="{StaticResource ControlCornerRadius}"
                           >
 
-            <Grid>
+                <Grid>
 
-                <TextBlock Text="Goal Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBox x:Name="txtGoalWeight" Text="{Binding GoalWeight, Mode=TwoWay}" PlaceholderText="Goal Weight" MinWidth="200" HorizontalAlignment="Right"/>
+                    <TextBlock Text="Goal Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <TextBox x:Name="txtGoalWeight" Text="{Binding GoalWeight, Mode=TwoWay}" PlaceholderText="Goal Weight" MinWidth="200" HorizontalAlignment="Right"/>
+                </Grid>
+
             </Grid>
-
-        </Grid>
-        <muxc:Expander
+            <muxc:Expander
             Margin="0,12,0,0"
             MinHeight="60"
                 IsExpanded="False"
@@ -78,7 +79,7 @@
                 </muxc:Expander.Content>
             </muxc:Expander>
 
-        <Grid
+            <Grid
                           Margin="0,12,0,0"
                           MinHeight="48"
                                   Padding="16"
@@ -89,11 +90,13 @@
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}"
                           >
-            <Grid>
-                <TextBlock Text="Weekly Rate" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <ComboBox ItemsSource="{x:Bind lossRate}" SelectedItem="{Binding GoalRate, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="Right"/>
+                <Grid>
+                    <TextBlock Text="Weekly Rate" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <ComboBox ItemsSource="{x:Bind lossRate}" SelectedItem="{Binding GoalRate, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="Right"/>
+                </Grid>
             </Grid>
-        </Grid>
-        <Button x:Name="btnSave" Click="btnSave_Click" HorizontalAlignment="Right" Content="Save" Margin="0,12,0,0" Width="100" Height="35" Background="{ThemeResource SystemAccentColor}"/>
-    </StackPanel>
+            <Button x:Name="btnSave" Click="btnSave_Click" HorizontalAlignment="Right" Content="Save" Margin="0,12,0,0" Width="100" Height="35" Background="{ThemeResource SystemAccentColor}"/>
+        </StackPanel>
+    </ScrollViewer>
+    
 </Page>

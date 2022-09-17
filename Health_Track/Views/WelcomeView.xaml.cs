@@ -59,7 +59,7 @@ namespace Health_Track.Views
             App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.CurrentWeight = currentWeight;
 
             // add weight to viewmodel
-            await App.Current.Services.GetRequiredService<WeightRecordViewModel>().AddWeightRecord(new WeightRecord { Date = DateTimeOffset.Now, Weight = currentWeight });
+            await App.Current.Services.GetRequiredService<WeightRecordViewModel>().AddWeightRecord(new WeightRecord { Date = DateTimeOffset.Now, Weight = currentWeight }, this.XamlRoot);
             await App.Current.Services.GetRequiredService<WeightRecordViewModel>().SerializeProfileAsync();
 
             // Save App setting to not show this again

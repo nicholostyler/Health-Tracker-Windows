@@ -6,11 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <!-- Content body -->
-        <TextBox x:Name="txtNewWeight" Text="{Binding NewWeight}" PlaceholderText="e.g 200.4" TextWrapping="Wrap" TextChanged="TextBox_TextChanged" BeforeTextChanging="txtNewWeight_BeforeTextChanging" />
+        <TextBox x:Name="txtNewWeight" Margin="0,12,0,0" Text="{Binding NewWeight}" PlaceholderText="e.g 200.4" TextWrapping="Wrap" TextChanged="TextBox_TextChanged" BeforeTextChanging="txtNewWeight_BeforeTextChanging" />
+
         <DatePicker x:Name="datePicker" Date="{Binding NewDate}"  DateChanged="datePicker_DateChanged"/>
+
     </StackPanel>
 </Page>

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -63,16 +64,24 @@ namespace Health_Track
                 var dialogPage = dialog.Content as NewWeightRecordDialogContent;
                 DateTimeOffset newDate = dialogPage.NewDate;
                 double newWeight = dialogPage.NewWeight;
-                await viewModel.AddWeightRecord(new Models.WeightRecord { Weight = newWeight, Date = newDate });
+                await viewModel.AddWeightRecord(new Models.WeightRecord { Weight = newWeight, Date = newDate }, this.XamlRoot);
             }
         }
 
-        private void btnEditCancel_Click(object sender, RoutedEventArgs e)
+        private async void btnEditCancel_Click(object sender, RoutedEventArgs e)
         {
+            // Get the datepicker date
+            StackPanel buttonStack = (sender as Button).Parent as StackPanel;
+            StackPanel detailsStack = buttonStack.Parent as StackPanel;
+            StackPanel weightStack = detailsStack.Children[0] as StackPanel;
+            await App.Current.Services.GetService<WeightRecordViewModel>().DeleteWeightRecord(LogbookListView.SelectedIndex);
+            
+            // Reset SelectedIndex to zero
+            LogbookListView.SelectedIndex = 0;
             
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
             StackPanel buttonStack = (sender as Button).Parent as StackPanel;
             StackPanel detailsStack = buttonStack.Parent as StackPanel;
@@ -84,7 +93,7 @@ namespace Health_Track
             DateTimeOffset datePicker = (dateStack.Children[1] as DatePicker).Date;
             var newWeight2 = new Models.WeightRecord { Date = datePicker, Weight = Double.Parse(newWeight) };
             var newSelectedItem = LogbookListView.SelectedItem as WeightRecord;
-            App.Current.Services.GetService<WeightRecordViewModel>().UpdateWeightRecord(newWeight2, newSelectedItem);
+            await App.Current.Services.GetService<WeightRecordViewModel>().UpdateWeightRecord(newWeight2, newSelectedItem);
             
         }
 
