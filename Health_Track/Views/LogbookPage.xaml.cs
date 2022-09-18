@@ -70,6 +70,8 @@ namespace Health_Track
 
         private async void btnEditCancel_Click(object sender, RoutedEventArgs e)
         {
+            // If you are deleting the last element
+            if (LogbookListView.SelectedIndex < 0) return;
             // Get the datepicker date
             StackPanel buttonStack = (sender as Button).Parent as StackPanel;
             StackPanel detailsStack = buttonStack.Parent as StackPanel;

@@ -53,14 +53,19 @@ namespace Health_Track.ViewModels
 
             // Sort the collection that was read if there are any elements
 
+            await SortWeightRecords();
+
+        }
+
+        private async Task SortWeightRecords()
+        {
             var sortableCollection = new List<WeightRecord>(WeightRecords);
-            sortableCollection.Sort((a, b) => a.Weight.CompareTo(b.Weight));
+            sortableCollection = WeightRecords.OrderByDescending(weight => weight.Date).ToList();
             for (int i = 0; i < sortableCollection.Count; i++)
             {
                 WeightRecords.Move(WeightRecords.IndexOf(sortableCollection[i]), i);
                 await SerializeWeightRecordsAsync();
             }
-            
         }
 
         public async Task SerializeWeightRecordsAsync()
@@ -213,23 +218,19 @@ namespace Health_Track.ViewModels
             }
         }
 
-        private bool DateIsInList(DateTimeOffset checkDate)
-        {
-            bool IsInList = WeightRecords.Any(
-                weight => weight.Date.Day == checkDate.Day
-            && weight.Date.Month == checkDate.Month 
-            && weight.Date.Year == checkDate.Year);
-
-            return IsInList;
-        }
-
         public async Task AddWeightRecord(WeightRecord newWeightRecord, XamlRoot context)
         {
             if (newWeightRecord == null) return;
 
-            // TODO: Make sure you don't add a date that is already there
-            
-            if (DateIsInList(newWeightRecord.Date))
+            // Make sure you don't add a date that is already there.
+            // will throw null if there is no value, MUST check.
+            WeightRecord searchedRecord = WeightRecords.FirstOrDefault(
+                weight => weight.Date.Day == newWeightRecord.Date.Day
+            && weight.Date.Month == newWeightRecord.Date.Month
+            && weight.Date.Year == newWeightRecord.Date.Year);
+
+            // There is a weight record for that day
+            if (searchedRecord != null)
             {
                 // Generate dialog
                 ContentDialog dialog = new ContentDialog();
@@ -245,19 +246,65 @@ namespace Health_Track.ViewModels
                 dialog.Content = new TextBlock { Text = newWeightRecord.DateLabel };
                 var result = await dialog.ShowAsync();
 
-                // TODO: Cancel if cancel is hit.
+                // Cancel if cancel is hit.
+                if (result == ContentDialogResult.Secondary) return;
 
+                // If Save is hit
+                // Search for previous record at the same date
+                // get index
+                int indexSearch = WeightRecords.IndexOf(searchedRecord);
+                if (indexSearch == 0)
+                {
+                    Profile.CurrentWeight = newWeightRecord.Weight;
+
+                }
+                else
+                {
+                    
+                }
+                WeightRecords.Remove(searchedRecord);
+                WeightRecords.Insert(indexSearch, newWeightRecord);
+
+                // Calculate new statistics
+                GenerateDashboard();
+                // begin to save into JSON
+                await SerializeWeightRecordsAsync();
+                await SerializeProfileAsync();
+                return;
             }
-            Profile.CurrentWeight = newWeightRecord.Weight;
+            else
+            {
+                // Check if its the latest date
+                // for each loop to find exact spot 
+                // TODO: Use LINQ?
+                int looper = 0;
+                foreach (WeightRecord record in WeightRecords)
+                {
+                    // if <0 added record is earlier than looped date
+                    // if =0 added record is the same as the looped date (shouldn't happen)
+                    // if >0 added record is later than looped date
+                    int compareDate = newWeightRecord.Date.CompareTo(record.Date);
 
+                    if (looper == WeightRecords.Count - 1)
+                    {
+                        // is at the end of the list
+                        WeightRecords.Add(newWeightRecord);
+                    }
+                    else if (compareDate > 0)
+                    {
+                        WeightRecords.Insert(looper, newWeightRecord);
+                        // Calculate new statistics
+                        GenerateDashboard();
+                        // begin to save into JSON
+                        await SerializeWeightRecordsAsync();
+                        await SerializeProfileAsync();
+                        break;
+                    }
+                    looper++;
+                }
+            }
 
-            WeightRecords.Insert(0, newWeightRecord);
-
-            // Calculate new statistics
-            GenerateDashboard();
-            // begin to save into JSON
-            await SerializeWeightRecordsAsync();
-            await SerializeProfileAsync();
+            
         }
 
         private void GenerateDashboard()
@@ -281,13 +328,15 @@ namespace Health_Track.ViewModels
 
         public async Task DeleteWeightRecord(int index)
         {
-            // if index is not valid
+            // if index is not valid or WeightRecords contains no elements.
             if (index < 0) return;
 
             WeightRecords.RemoveAt(index);
+
+            if (WeightRecords.Count == 0) return;
             
             // If first in list -- make current weight next in line
-            if (index == 0)
+            if (index == 0 )
             {
                 Profile.CurrentWeight = WeightRecords[0].Weight;
             }
@@ -328,7 +377,7 @@ namespace Health_Track.ViewModels
      .Where(m => m.Date <= today && m.Date > monthAgo)
      .Concat(WeightRecords.Where(d => d.Date > monthAgo).TakeLast(1));
 
-            if (WeightRecords == null || WeightRecords.Count == 0) return;
+            if (WeightRecords == null || WeightRecords.Count == 0 || items == null) return;
 
             var largestWeight = items.Max(weight => weight.Weight);
             var lostTotal = largestWeight - Profile.CurrentWeight;
