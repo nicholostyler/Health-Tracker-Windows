@@ -44,6 +44,23 @@ namespace Health_Track.Models
             get { return _date.ToString("d"); }
         }
 
+        [JsonIgnore]
+        public DateTime Today
+        {
+            get
+            {
+                return DateTime.Now;
+            }
+        }
+
+        [JsonIgnore]
+        public DateTime DateTimeDate
+        {
+            get
+            {
+                return _date.DateTime;
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(String info)
         {

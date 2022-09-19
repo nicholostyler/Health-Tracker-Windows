@@ -11,6 +11,12 @@
 
     <ScrollViewer>
         <StackPanel Margin="12,12,12,0" >
+            <muxc:InfoBar
+                x:Name="InfoBar"
+                IsOpen="false"
+                Severity="Error"
+                Title="Something's not quite right"
+                Message="The name field cannot contain numbers." />
             <TextBlock Text="Your Info" Margin="0,12,12,12" FontWeight="Bold"/>
 
             <Grid
@@ -27,7 +33,7 @@
                 <Grid>
 
                     <TextBlock Text="Name" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                    <TextBox Text="{Binding Name, Mode=TwoWay}" PlaceholderText="Your Name" MinWidth="200" HorizontalAlignment="Right"/>
+                    <TextBox x:Name="txtName" Text="{Binding Name}" PlaceholderText="Your Name" MinWidth="200" HorizontalAlignment="Right"/>
                 </Grid>
             </Grid>
             <Grid
@@ -62,7 +68,7 @@
                 <Grid>
 
                     <TextBlock Text="Goal Weight" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                    <TextBox x:Name="txtGoalWeight" Text="{Binding GoalWeight, Mode=TwoWay}" PlaceholderText="Goal Weight" MinWidth="200" HorizontalAlignment="Right"/>
+                    <TextBox x:Name="txtGoalWeight" Text="{Binding GoalWeight}" PlaceholderText="Goal Weight" MinWidth="200" HorizontalAlignment="Right"/>
                 </Grid>
 
             </Grid>
@@ -75,7 +81,7 @@
                 HorizontalAlignment="Stretch"
                 >
                 <muxc:Expander.Content>
-                    <DatePicker Date="{Binding GoalDate, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="Right" Margin="24,0,0,0"/>
+                    <DatePicker x:Name="datePicker" SelectedDate="{Binding GoalDate}" MinWidth="200" HorizontalAlignment="Right" Margin="24,0,0,0"/>
                 </muxc:Expander.Content>
             </muxc:Expander>
 
@@ -92,7 +98,7 @@
                           >
                 <Grid>
                     <TextBlock Text="Weekly Rate" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                    <ComboBox ItemsSource="{x:Bind lossRate}" SelectedItem="{Binding GoalRate, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="Right"/>
+                    <ComboBox ItemsSource="{x:Bind lossRate}" SelectedItem="{Binding GoalRate}" MinWidth="200" HorizontalAlignment="Right"/>
                 </Grid>
             </Grid>
             <Button x:Name="btnSave" Click="btnSave_Click" HorizontalAlignment="Right" Content="Save" Margin="0,12,0,0" Width="100" Height="35" Background="{ThemeResource SystemAccentColor}"/>

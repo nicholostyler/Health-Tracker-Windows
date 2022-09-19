@@ -10,12 +10,12 @@
     Loaded="Page_Loaded"
     mc:Ignorable="d"
     muxc:BackdropMaterial.ApplyToRootOrPageBackground="True"
-    
     >
 
     <Grid x:Name="MainGrid">
         
         <muxc:NavigationView Grid.Column="1" x:Name="NavigationViewControl"
+                             IsBackButtonVisible="Collapsed"
                              Header="Home"
                        PaneDisplayMode="Top"
                         
@@ -29,7 +29,9 @@
                 <muxc:NavigationViewItem Icon="Bookmarks" Tag="logbook"  Content="Logbook"/>
                 <muxc:NavigationViewItem Icon="Contact" Tag="profile"  Content="Profile"/>
             </muxc:NavigationView.MenuItems>
-            <Frame Margin="45,0,45,0" x:Name="contentFrame" Background="Transparent"/>
+                <Frame Margin="45,0,45,0" x:Name="contentFrame" Background="Transparent">
+                </Frame>
+            
 
         </muxc:NavigationView>
     </Grid>

@@ -10,7 +10,11 @@
 >
 
     <Grid Background="Transparent">
-        <ScrollViewer>
+        <StackPanel x:Name="NoWeightStack" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+            <TextBlock Text="No Current Weight Logs"/>
+            <Button x:Name="btnAddWeight" Content="Add" HorizontalAlignment="Stretch" Background="{ThemeResource SystemAccentColor}" Margin="0,12,0,0"/>
+        </StackPanel>
+        <ScrollViewer x:Name="MainDashView">
             <Grid Margin="12,12,12,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="80"/>

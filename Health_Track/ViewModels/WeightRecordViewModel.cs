@@ -239,11 +239,11 @@ namespace Health_Track.ViewModels
                 if (context == null) return;
                 dialog.XamlRoot = context;
                 dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-                dialog.Title = "Overwrite Existing?";
-                dialog.PrimaryButtonText = "Save";
+                dialog.Title = "Overwrite";
+                dialog.PrimaryButtonText = "Yes";
                 dialog.SecondaryButtonText = "Cancel";
                 dialog.DefaultButton = ContentDialogButton.Primary;
-                dialog.Content = new TextBlock { Text = newWeightRecord.DateLabel };
+                dialog.Content = new TextBlock { Text = "Overwrite existing record on: " + newWeightRecord.DateLabel + " ?", TextWrapping = TextWrapping.WrapWholeWords};
                 var result = await dialog.ShowAsync();
 
                 // Cancel if cancel is hit.
@@ -284,11 +284,37 @@ namespace Health_Track.ViewModels
                     // if =0 added record is the same as the looped date (shouldn't happen)
                     // if >0 added record is later than looped date
                     int compareDate = newWeightRecord.Date.CompareTo(record.Date);
+                    
+                    // If there is only one record
+                    if (WeightRecords.Count == 1)
+                    {
+                        if (compareDate > 0)
+                        {
+                            WeightRecords.Insert(0, newWeightRecord);
+                            Profile.CurrentWeight = newWeightRecord.Weight;
+                        }
+                        else
+                        {
+                            WeightRecords.Add(newWeightRecord);
+                        }
+                        // Calculate new statistics
+                        GenerateDashboard();
+                        // begin to save into JSON
+                        await SerializeWeightRecordsAsync();
+                        await SerializeProfileAsync();
+                        break;
+                    }
 
                     if (looper == WeightRecords.Count - 1)
                     {
                         // is at the end of the list
                         WeightRecords.Add(newWeightRecord);
+                        // Calculate new statistics
+                        GenerateDashboard();
+                        // begin to save into JSON
+                        await SerializeWeightRecordsAsync();
+                        await SerializeProfileAsync();
+                        break;
                     }
                     else if (compareDate > 0)
                     {
@@ -304,6 +330,13 @@ namespace Health_Track.ViewModels
                 }
             }
 
+            // if there are no logs
+            if (WeightRecords.Count == 0)
+            {
+                WeightRecords.Add(newWeightRecord);
+                Profile.CurrentWeight = newWeightRecord.Weight;
+                Profile.StartingWeight = newWeightRecord.Weight;
+            }
             
         }
 
@@ -337,6 +370,27 @@ namespace Health_Track.ViewModels
             
             // If first in list -- make current weight next in line
             if (index == 0 )
+            {
+                Profile.CurrentWeight = WeightRecords[0].Weight;
+            }
+
+            await SerializeWeightRecordsAsync();
+            await SerializeProfileAsync();
+            GenerateDashboard();
+        }
+
+        public async Task DeleteWeightRecord(WeightRecord selectedRecord)
+        {
+            WeightRecords.Remove(selectedRecord);
+
+            if (WeightRecords.Count == 0)
+            {
+                Profile.CurrentWeight = 0;
+                return;
+            }
+
+            // If first in list -- make current weight next in line
+            if (WeightRecords.Count == 1)
             {
                 Profile.CurrentWeight = WeightRecords[0].Weight;
             }
@@ -421,7 +475,6 @@ namespace Health_Track.ViewModels
             var amountToLose = Profile.StartingWeight - Profile.GoalWeight;
             var percentage = Profile.GoalWeight / Profile.CurrentWeight;
             Profile.GoalPercentage = percentage * 100;
-            //NotifyPropertyChanged("GoalPercentage");
         }
     }
 }

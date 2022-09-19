@@ -29,20 +29,18 @@ namespace Health_Track
     /// </summary>
     public sealed partial class LogbookPage : Page
     {
-        private WeightRecordViewModel viewModel;
         public LogbookPage()
         {
             this.InitializeComponent();
             // Use this to prevent infinite page creation.
             this.NavigationCacheMode = NavigationCacheMode.Required;
-            viewModel = App.Current.Services.GetService<WeightRecordViewModel>();
 
             this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>();
             // set listview to first item in WeightRecords
             LogbookListView.SelectedIndex = 0;
+            
         }
 
-        public WeightRecordViewModel ViewModel => (WeightRecordViewModel)DataContext;
 
         private async void ABBNewWeightRecord_Click(object sender, RoutedEventArgs e)
         {
@@ -64,8 +62,11 @@ namespace Health_Track
                 var dialogPage = dialog.Content as NewWeightRecordDialogContent;
                 DateTimeOffset newDate = dialogPage.NewDate;
                 double newWeight = dialogPage.NewWeight;
-                await viewModel.AddWeightRecord(new Models.WeightRecord { Weight = newWeight, Date = newDate }, this.XamlRoot);
+                await App.Current.Services.GetService<WeightRecordViewModel>().AddWeightRecord(new Models.WeightRecord { Weight = newWeight, Date = newDate }, this.XamlRoot);
             }
+            LogbookListView.SelectedIndex = 0;
+
+
         }
 
         private async void btnEditCancel_Click(object sender, RoutedEventArgs e)
@@ -113,6 +114,14 @@ namespace Health_Track
                     FlyoutBase.ShowAttachedFlyout((FrameworkElement)sender);
                 }
             }
+        }
+
+        private async void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            // Delete item
+            MenuFlyoutItem parent = sender as MenuFlyoutItem;
+            WeightRecord selectedRecord = parent.DataContext as WeightRecord;
+            await App.Current.Services.GetService<WeightRecordViewModel>().DeleteWeightRecord(selectedRecord);
         }
     }
 }

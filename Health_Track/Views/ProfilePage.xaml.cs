@@ -1,4 +1,6 @@
-﻿using Health_Track.ViewModels;
+﻿using Health_Track.Helpers;
+using Health_Track.Models;
+using Health_Track.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -34,6 +36,7 @@ namespace Health_Track
             lossRate.Add(2);
             lossRate.Add(3);
             lossRate.Add(4);
+            InfoBar.IsOpen = false;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -43,11 +46,55 @@ namespace Health_Track
 
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            //double goalWeight = Double.Parse(txtGoalWeight.Text);
-            //string name = 
-            //App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.GoalWeight = goalWeight;
+            // Determine if all the profiles values are verified
+            string name = txtName.Text;
+            string weight = txtGoalWeight.Text;
+            if (!datePicker.SelectedDate.HasValue) return;
+            DateTimeOffset? date = datePicker.SelectedDate;
+            Profile updatedProfile = new Profile();
+
+            if (!FieldVerifier.ValidateName(name))
+            {
+                // name is not valid
+                InfoBar.IsOpen = true;
+                InfoBar.Message = "The name field is invalid, can only contain letters.";
+                return;
+            }
+
+            App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.Name = name;
+
+            if (!FieldVerifier.ValidateWeight(weight))
+            {
+                // Weight is not valid
+                InfoBar.IsOpen = true;
+                InfoBar.Message = "The weight field is invalid, can only contains numbers.";
+                return;
+            }
+
+            App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.GoalWeight = Double.Parse(weight);
+
+            if (!FieldVerifier.ValidateDate(date.Value))
+            {
+                InfoBar.IsOpen = true;
+                InfoBar.Message = "The date field is invalid, must be a date before today.";
+                return;
+            }
+
+
+            InfoBar.IsOpen = true;
+            InfoBar.Severity = Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success;
+            InfoBar.Title = "Success";
+            InfoBar.Message = "Profile updated and saved.";
+
+            // BUG
+            if (date.Value.Year != 1600)
+            {
+                App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile.GoalDate = date.Value;
+            }
+
+            await App.Current.Services.GetRequiredService<WeightRecordViewModel>().SerializeProfileAsync();
         }
     }
 }

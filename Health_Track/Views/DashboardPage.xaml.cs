@@ -45,6 +45,17 @@ namespace Health_Track
             App.Current.Services.GetRequiredService<WeightRecordViewModel>().ResetProgress();
             this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
 
+            if (App.Current.Services.GetRequiredService<WeightRecordViewModel>().WeightRecords.Count == 0)
+            {
+                NoWeightStack.Visibility = Visibility.Visible;
+                MainDashView.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                NoWeightStack.Visibility = Visibility.Collapsed;
+                MainDashView.Visibility = Visibility.Visible;
+            }
+
         }
 
         public void PopulateProgressCard()

@@ -1,4 +1,5 @@
-﻿using Health_Track.Models;
+﻿using Health_Track.Helpers;
+using Health_Track.Models;
 using Health_Track.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -43,9 +44,11 @@ namespace Health_Track.Views
 
         private async void FinishBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateName()) return;
-            if (!ValidateWeight()) return;
-            if (!ValidateDate()) return;
+            if (!pickerDate.SelectedDate.HasValue) return;
+            if (!FieldVerifier.ValidateName(txtName.Text)) return;
+            if (!FieldVerifier.ValidateWeight(txtGoalWeight.Text)) return;
+            if (!FieldVerifier.ValidateWeight(txtCurrentWeight.Text)) return;
+            if (!FieldVerifier.ValidateDate((DateTimeOffset)pickerDate.SelectedDate)) return;
 
             Profile newProfile = new Profile();
             //newProfile.Name = name;
@@ -72,52 +75,6 @@ namespace Health_Track.Views
             this.Frame.Navigate(typeof(MainPage));
         }
 
-        private bool ValidateName()
-        {
-            bool isValid = false;
-
-            try
-            {
-                name = txtName.Text;
-                if (string.IsNullOrEmpty(name)) return isValid;
-                isValid = true;
-            } 
-            catch (Exception e)
-            {
-                isValid = false;
-                Console.WriteLine(e.Message);
-            }
-
-            return isValid;
-        }
-
-        private bool ValidateWeight()
-        {
-            bool isValid = false;
-
-            if (double.TryParse(txtGoalWeight.Text, out weight) && double.TryParse(txtCurrentWeight.Text, out currentWeight))
-            {
-                isValid = true;
-                return isValid;
-            }
-
-            return isValid;
-        }
-
-        private bool ValidateDate()
-        {
-            bool isValid = false;
-
-            // set today's date and the selectedDate value
-            DateTimeOffset today = DateTime.Now;
-            date = pickerDate.SelectedDate;
-            // make sure the nullable value has a value
-            if (!date.HasValue) return false;
-            // if the value of the compareTo is less than zero it is before today.
-            if (date.Value.CompareTo(today) < 0) return isValid;
-            // everything is OK
-            isValid = true;
-            return isValid;
-        }
+        
     }
 }

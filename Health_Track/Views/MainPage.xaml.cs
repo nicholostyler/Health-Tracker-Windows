@@ -1,4 +1,5 @@
-﻿using Health_Track.ViewModels;
+﻿using Health_Track.Helpers;
+using Health_Track.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,10 @@ namespace Health_Track
         public MainPage()
         {
             this.InitializeComponent();
+            FieldVerifier.ValidateName("nicholos");
+            FieldVerifier.ValidateName("1nicholos");
+            FieldVerifier.ValidateWeight("123");
+            
             
         }
 

@@ -315,6 +315,8 @@ namespace Health_Track.Models
             }
         }
 
+
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(String info)
         {
