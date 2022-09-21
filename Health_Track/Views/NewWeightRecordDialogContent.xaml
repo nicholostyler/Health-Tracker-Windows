@@ -10,9 +10,10 @@
 
     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <!-- Content body -->
-        <TextBox x:Name="txtNewWeight" Margin="0,12,0,0" Text="{Binding NewWeight}" PlaceholderText="e.g 200.4" TextWrapping="Wrap" TextChanged="TextBox_TextChanged" BeforeTextChanging="txtNewWeight_BeforeTextChanging" />
-
-        <DatePicker x:Name="datePicker" Date="{Binding NewDate}"  DateChanged="datePicker_DateChanged"/>
+        <TextBlock Text="Weight"/>
+        <TextBox x:Name="txtNewWeight" Margin="0,12,0,12" Text="{Binding NewWeight}" PlaceholderText="e.g 200.4" TextWrapping="Wrap" TextChanged="TextBox_TextChanged" BeforeTextChanging="txtNewWeight_BeforeTextChanging" />
+        <TextBlock x:Name="txtDate" Text="Date"/>
+        <DatePicker x:Name="datePicker" Margin="0,12,0,12" Date="{Binding NewDate}"  DateChanged="datePicker_DateChanged"/>
 
     </StackPanel>
 </Page>

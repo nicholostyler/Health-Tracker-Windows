@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Health_Track.Helpers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,7 +50,15 @@ namespace Health_Track
 
         private void datePicker_DateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            NewDate = datePicker.Date;
+            if (!FieldVerifier.ValidateDate(datePicker.SelectedDate.Value))
+            {
+                txtDate.Text = "Date: Invalid Date";
+            }
+            else
+            {
+                txtDate.Text = "Date";
+                NewDate = datePicker.Date;
+            }
         }
 
         private void txtNewWeight_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)

@@ -10,6 +10,10 @@
     mc:Ignorable="d"
     >
     <Grid Margin="0,12,0,0">
+        <StackPanel x:Name="NoWeightStack" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+            <TextBlock Text="No Current Weight Logs"/>
+            <Button x:Name="btnAddWeight" Click="ABBNewWeightRecord_Click" Content="Add" HorizontalAlignment="Stretch" Background="{ThemeResource SystemAccentColor}" Margin="0,12,0,0"/>
+        </StackPanel>
         <controls:ListDetailsView x:Name="LogbookListView" Background="Transparent" BackButtonBehavior="Automatic" ItemsSource="{Binding WeightRecords}" >
             <controls:ListDetailsView.ItemTemplate>
                 <DataTemplate>

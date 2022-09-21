@@ -47,8 +47,8 @@ namespace Health_Track.Helpers
             //date = pickerDate.SelectedDate;
             // make sure the nullable value has a value
             //if (date.HasValue) return false;
-            // if the value of the compareTo is less than zero it is before today.
-            if (date.CompareTo(today) < 0) return false;
+            // if the value of the compareTo is greater than zero it is after today.
+            if (date.CompareTo(today) > 0) return false;
 
             return true;
         }

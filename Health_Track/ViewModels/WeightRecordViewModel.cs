@@ -1,4 +1,5 @@
-﻿using Health_Track.Models;
+﻿using Health_Track.Helpers;
+using Health_Track.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,34 @@ namespace Health_Track.ViewModels
     {
         //TODO: Put Data into a seperate class
         public ObservableCollection<WeightRecord> WeightRecords { get; set; }
+        private bool _showMain;
+        public bool ShowMain 
+        { 
+            get
+            {
+                return _showMain;
+            }
+            set
+            {
+                _showMain = value;
+                NotifyPropertyChanged("ShowMain");
+            }
+        }
+
+        private bool _showAdd;
+        public bool ShowAdd
+        {
+            get
+            {
+                return _showAdd;
+            }
+            set
+            {
+                _showAdd = value;
+                NotifyPropertyChanged("ShowAdd");
+            }
+        }
+
         private Profile _profile;
         public Profile Profile
         {
@@ -44,6 +73,8 @@ namespace Health_Track.ViewModels
 
         public async Task InitAsync()
         {
+            ShowAdd = true;
+            ShowMain = false;
             // Read the WeightRecords.json
             await ReadFileFromSystem(true);
             // read the profile.json
@@ -103,6 +134,7 @@ namespace Health_Track.ViewModels
             {
                 Console.Error.WriteLine("Json is empty!");
             }
+            if (json == "[]") return;
 
             if (isRecords)
             {
@@ -119,7 +151,8 @@ namespace Health_Track.ViewModels
                 }
                 Profile.StartingWeight = weights[weights.Length - 1].Weight;
                 Profile.CurrentWeight = WeightRecords[0].Weight;
-
+                ShowAdd = false;
+                ShowMain = true;
             }
             else
             {
@@ -221,6 +254,7 @@ namespace Health_Track.ViewModels
         public async Task AddWeightRecord(WeightRecord newWeightRecord, XamlRoot context)
         {
             if (newWeightRecord == null) return;
+            
 
             // Make sure you don't add a date that is already there.
             // will throw null if there is no value, MUST check.
@@ -336,8 +370,13 @@ namespace Health_Track.ViewModels
                 WeightRecords.Add(newWeightRecord);
                 Profile.CurrentWeight = newWeightRecord.Weight;
                 Profile.StartingWeight = newWeightRecord.Weight;
+                ShowAdd = false;
+                ShowMain = true;
+                GenerateDashboard();
             }
-            
+            // begin to save into JSON
+            await SerializeWeightRecordsAsync();
+            await SerializeProfileAsync();
         }
 
         private void GenerateDashboard()
@@ -365,8 +404,16 @@ namespace Health_Track.ViewModels
             if (index < 0) return;
 
             WeightRecords.RemoveAt(index);
+            await SerializeWeightRecordsAsync();
+            await SerializeProfileAsync();
+            GenerateDashboard();
 
-            if (WeightRecords.Count == 0) return;
+            if (WeightRecords.Count == 0)
+            {
+                ShowAdd = true;
+                ShowMain = false;
+                return;
+            }
             
             // If first in list -- make current weight next in line
             if (index == 0 )
@@ -374,18 +421,21 @@ namespace Health_Track.ViewModels
                 Profile.CurrentWeight = WeightRecords[0].Weight;
             }
 
-            await SerializeWeightRecordsAsync();
-            await SerializeProfileAsync();
-            GenerateDashboard();
+            
         }
 
         public async Task DeleteWeightRecord(WeightRecord selectedRecord)
         {
             WeightRecords.Remove(selectedRecord);
+            await SerializeWeightRecordsAsync();
+            await SerializeProfileAsync();
+            GenerateDashboard();
 
             if (WeightRecords.Count == 0)
             {
                 Profile.CurrentWeight = 0;
+                ShowAdd = true;
+                ShowMain = false;
                 return;
             }
 
@@ -394,10 +444,6 @@ namespace Health_Track.ViewModels
             {
                 Profile.CurrentWeight = WeightRecords[0].Weight;
             }
-
-            await SerializeWeightRecordsAsync();
-            await SerializeProfileAsync();
-            GenerateDashboard();
         }
 
         public void GetWeightWeekAgo()

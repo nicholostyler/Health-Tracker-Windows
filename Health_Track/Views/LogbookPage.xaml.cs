@@ -41,6 +41,28 @@ namespace Health_Track
             
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            ResetViews();
+
+        }
+
+        private void ResetViews()
+        {
+            if (App.Current.Services.GetRequiredService<WeightRecordViewModel>().WeightRecords.Count == 0)
+            {
+                NoWeightStack.Visibility = Visibility.Visible;
+                LogbookListView.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                NoWeightStack.Visibility = Visibility.Collapsed;
+                LogbookListView.Visibility = Visibility.Visible;
+            }
+        }
+
 
         private async void ABBNewWeightRecord_Click(object sender, RoutedEventArgs e)
         {
@@ -63,8 +85,9 @@ namespace Health_Track
                 DateTimeOffset newDate = dialogPage.NewDate;
                 double newWeight = dialogPage.NewWeight;
                 await App.Current.Services.GetService<WeightRecordViewModel>().AddWeightRecord(new Models.WeightRecord { Weight = newWeight, Date = newDate }, this.XamlRoot);
+                LogbookListView.SelectedIndex = 0;
+                ResetViews();
             }
-            LogbookListView.SelectedIndex = 0;
 
 
         }

@@ -35,16 +35,14 @@ namespace Health_Track
 
             this.InitializeComponent();
             
-            this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
+            this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>();
+            MainDashView.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>();
+            MainScrollView.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
             this.NavigationCacheMode = NavigationCacheMode.Required;
        }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        private void ResetViews()
         {
-            base.OnNavigatedTo(e);
-            App.Current.Services.GetRequiredService<WeightRecordViewModel>().ResetProgress();
-            this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
-
             if (App.Current.Services.GetRequiredService<WeightRecordViewModel>().WeightRecords.Count == 0)
             {
                 NoWeightStack.Visibility = Visibility.Visible;
@@ -55,7 +53,17 @@ namespace Health_Track
                 NoWeightStack.Visibility = Visibility.Collapsed;
                 MainDashView.Visibility = Visibility.Visible;
             }
+        }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            App.Current.Services.GetRequiredService<WeightRecordViewModel>().ResetProgress();
+            this.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>();
+            MainDashView.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>();
+            MainScrollView.DataContext = App.Current.Services.GetRequiredService<WeightRecordViewModel>().Profile;
+            //ResetViews();
+            
         }
 
         public void PopulateProgressCard()
@@ -69,6 +77,31 @@ namespace Health_Track
             ProgressMonthDateLabel = dateMonth.ToString("yyyy-MM-dd");
             Progress3MonthDateLabel = date3Months.ToString("yyyy-MM-dd");
             Progress6MonthDateLabel = date6Months.ToString("yyyy-MM-dd");
+        }
+
+        private async void btnAddWeight_Click(object sender, RoutedEventArgs e)
+        {
+            // Call Content Dialog
+            ContentDialog dialog = new ContentDialog();
+
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "New Weight Record";
+            dialog.PrimaryButtonText = "Add";
+            dialog.SecondaryButtonText = "Cancel";
+            dialog.DefaultButton = ContentDialogButton.Primary;
+            dialog.Content = new NewWeightRecordDialogContent();
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var dialogPage = dialog.Content as NewWeightRecordDialogContent;
+                DateTimeOffset newDate = dialogPage.NewDate;
+                double newWeight = dialogPage.NewWeight;
+                await App.Current.Services.GetService<WeightRecordViewModel>().AddWeightRecord(new Models.WeightRecord { Weight = newWeight, Date = newDate }, this.XamlRoot);
+                ResetViews();
+            }
         }
     }
 }

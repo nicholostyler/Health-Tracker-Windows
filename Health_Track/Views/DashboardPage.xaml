@@ -6,44 +6,49 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     mc:Ignorable="d"
 >
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+    </Page.Resources>
 
     <Grid Background="Transparent">
-        <StackPanel x:Name="NoWeightStack" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+        <StackPanel x:Name="NoWeightStack" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ShowAdd, Mode=OneWay}">
             <TextBlock Text="No Current Weight Logs"/>
-            <Button x:Name="btnAddWeight" Content="Add" HorizontalAlignment="Stretch" Background="{ThemeResource SystemAccentColor}" Margin="0,12,0,0"/>
+            <Button x:Name="btnAddWeight" Click="btnAddWeight_Click"  Content="Add" HorizontalAlignment="Stretch" Background="{ThemeResource SystemAccentColor}" Margin="0,12,0,0"/>
         </StackPanel>
-        <ScrollViewer x:Name="MainDashView">
-            <Grid Margin="12,12,12,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="80"/>
-                    <RowDefinition Height="200"/>
-                    <RowDefinition Height="200"/>
-                    <RowDefinition Height="250"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
+        <Grid x:Name="MainDashView" Visibility="{Binding ShowMain, Mode=OneWay}">
+            <ScrollViewer x:Name="MainScrollView">
+                <Grid Margin="12,12,12,0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="250"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="{Binding Name}"/>
-                    <TextBlock Grid.Row="1" Text="CURRENT WEIGHT"/>
-                    <TextBlock Grid.Row="2" Text="{Binding CurrentWeightLabel}"/>
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="{Binding Name}"/>
+                        <TextBlock Grid.Row="1" Text="CURRENT WEIGHT"/>
+                        <TextBlock Grid.Row="2" Text="{Binding CurrentWeightLabel}"/>
+                    </Grid>
+                    <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid MinHeight="48"
+                        <Grid Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid MinHeight="48"
                                   Grid.Column="0"
                                   Padding="16"
                                   HorizontalAlignment="Stretch"
@@ -52,17 +57,17 @@
                                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5">
-                                <TextBlock Text="Week" Margin="8,8,0,0"/>
-                            </Border>
-                            <TextBlock Grid.Row="1" Text="{Binding Last7DaysLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5">
+                                    <TextBlock Text="Week" Margin="8,8,0,0"/>
+                                </Border>
+                                <TextBlock Grid.Row="1" Text="{Binding Last7DaysLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
 
-                        <Grid MinHeight="48"
+                            <Grid MinHeight="48"
                                   Grid.Column="1"
                                   Padding="16"
                                   HorizontalAlignment="Stretch"
@@ -71,22 +76,22 @@
                                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5">
-                                <TextBlock Text="Month" Margin="8,8,0,0"/>
-                            </Border>
-                            <TextBlock Grid.Row="1" Text="{Binding Last30DaysLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5">
+                                    <TextBlock Text="Month" Margin="8,8,0,0"/>
+                                </Border>
+                                <TextBlock Grid.Row="1" Text="{Binding Last30DaysLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid Grid.Column="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid MinHeight="48"
+                        <Grid Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid MinHeight="48"
                                   Grid.Column="0"
                                   Padding="16"
                                   HorizontalAlignment="Stretch"
@@ -95,16 +100,16 @@
                                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5" >
-                                <TextBlock Text="Year" Margin="8,8,0,0"/>
-                            </Border>
-                            <TextBlock Grid.Row="1" Text="{Binding LastYearLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <Grid MinHeight="48"
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5" >
+                                    <TextBlock Text="Year" Margin="8,8,0,0"/>
+                                </Border>
+                                <TextBlock Grid.Row="1" Text="{Binding LastYearLabel}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <Grid MinHeight="48"
                                   Grid.Column="1"
                                   Padding="16"
                                   HorizontalAlignment="Stretch"
@@ -115,18 +120,18 @@
                             
                               
                                   CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5" >
-                                <TextBlock Text="Average" Margin="8,8,0,0"/>
-                            </Border>
-                            <TextBlock Grid.Row="1" Text="{Binding AverageWeight}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,.5" >
+                                    <TextBlock Text="Average" Margin="8,8,0,0"/>
+                                </Border>
+                                <TextBlock Grid.Row="1" Text="{Binding AverageWeight}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-                <Grid x:Name="ProgressGrid"
+                    <Grid x:Name="ProgressGrid"
                           Margin="0,12,0,0"
                           Grid.Row="2"
                           MinHeight="48"
@@ -140,51 +145,51 @@
                                   CornerRadius="{StaticResource ControlCornerRadius}"
                           >
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                    </Grid.RowDefinitions>
-                    <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
-                        <TextBlock Text="Your Progress" Margin="8,8,0,0"/>
-                    </Border>
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Current" Grid.Row="0"/>
-                            <TextBlock Text="{Binding CurrentWeightLabel}" Grid.Row="1"/>
-                        </Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+                        <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
+                            <TextBlock Text="Your Progress" Margin="8,8,0,0"/>
+                        </Border>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Current" Grid.Row="0"/>
+                                <TextBlock Text="{Binding CurrentWeightLabel}" Grid.Row="1"/>
+                            </Grid>
 
-                        <Grid Grid.Column="1" HorizontalAlignment="Center">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Lost" Grid.Row="0"/>
-                            <TextBlock Text="{Binding TotalLostLabel}" Grid.Row="1"/>
+                            <Grid Grid.Column="1" HorizontalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Lost" Grid.Row="0"/>
+                                <TextBlock Text="{Binding TotalLostLabel}" Grid.Row="1"/>
+                            </Grid>
+                            <Grid Grid.Column="2" HorizontalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Target" Grid.Row="0"/>
+                                <TextBlock Text="{Binding TargetWeightLabel}" Grid.Row="1"/>
+                            </Grid>
+
                         </Grid>
-                        <Grid Grid.Column="2" HorizontalAlignment="Center">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Target" Grid.Row="0"/>
-                            <TextBlock Text="{Binding TargetWeightLabel}" Grid.Row="1"/>
-                        </Grid>
+                        <ProgressBar x:Name="ProgressBar" Value="{Binding GoalPercentage, UpdateSourceTrigger=PropertyChanged,  Mode=TwoWay}" Grid.Row="2"/>
 
                     </Grid>
-                    <ProgressBar x:Name="ProgressBar" Value="{Binding GoalPercentage, UpdateSourceTrigger=PropertyChanged,  Mode=TwoWay}" Grid.Row="2"/>
-
-                </Grid>
-                <Grid Grid.Row="3"
+                    <Grid Grid.Row="3"
                           Margin="0,12,0,0"
                           MinHeight="48"
                                   Grid.Column="1"
@@ -196,70 +201,72 @@
                                   BorderThickness="1"
                                   CornerRadius="{StaticResource ControlCornerRadius}"
                           >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="100"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
-                        <TextBlock Text="Your Progress" Margin="8,8,0,0"/>
-                    </Border>
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="1" MaxWidth="250">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="100"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border BorderBrush="Gray" BorderThickness="0,0,0,.5" Height="35" VerticalAlignment="Top">
+                            <TextBlock Text="Your Progress" Margin="8,8,0,0"/>
+                        </Border>
+                        <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.ColumnSpan="2" Height="50" Background="{ThemeResource SystemAccentColor}" Margin="0,0,12,0" HorizontalAlignment="Center" MinWidth="100">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="Goal Rate" Foreground="{ThemeResource SystemAltHighColor}"/>
-                                    <TextBlock Text="{Binding GoalRateLabel}" Foreground="{ThemeResource SystemAltHighColor}"/>
-                                </StackPanel>
-                            </Border>
-                            
+                            <Grid Grid.Column="1" MaxWidth="250">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.ColumnSpan="2" Height="50" Background="{ThemeResource SystemAccentColor}" Margin="0,0,12,0" HorizontalAlignment="Center" MinWidth="100">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="Goal Rate" Foreground="{ThemeResource SystemAltHighColor}"/>
+                                        <TextBlock Text="{Binding GoalRateLabel}" Foreground="{ThemeResource SystemAltHighColor}"/>
+                                    </StackPanel>
+                                </Border>
+
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding ProgressMonthLabel}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ProgressMonthDateLabel}"/>
+                                    <TextBlock Grid.Column="2" Text="Next Month"/>
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Progress3MonthLabel}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind Progress3MonthDateLabel}"/>
+                                    <TextBlock Grid.Column="2" Text="Next 3 Months"/>
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Progress6MonthLabel}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind Progress6MonthDateLabel}"/>
+                                    <TextBlock Grid.Column="2" Text="Next 6 Months"/>
+                                </Grid>
+                            </StackPanel>
                         </Grid>
                     </Grid>
-                    <Grid Grid.Row="2">
-                        <StackPanel>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding ProgressMonthLabel}"/>
-                                <TextBlock Grid.Column="1" Text="{x:Bind ProgressMonthDateLabel}"/>
-                                <TextBlock Grid.Column="2" Text="Next Month"/>
-                            </Grid>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding Progress3MonthLabel}"/>
-                                <TextBlock Grid.Column="1" Text="{x:Bind Progress3MonthDateLabel}"/>
-                                <TextBlock Grid.Column="2" Text="Next 3 Months"/>
-                            </Grid>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding Progress6MonthLabel}"/>
-                                <TextBlock Grid.Column="1" Text="{x:Bind Progress6MonthDateLabel}"/>
-                                <TextBlock Grid.Column="2" Text="Next 6 Months"/>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
                 </Grid>
-            </Grid>
-        </ScrollViewer>
+            </ScrollViewer>
+        </Grid>
+      
     </Grid>
 </Page>
