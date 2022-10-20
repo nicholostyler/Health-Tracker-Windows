@@ -50,6 +50,11 @@ namespace Health_Track.Views
             if (!FieldVerifier.ValidateWeight(txtCurrentWeight.Text)) return;
             if (!FieldVerifier.ValidateDate((DateTimeOffset)pickerDate.SelectedDate)) return;
 
+            date = (DateTimeOffset)pickerDate.SelectedDate;
+            weight = Convert.ToDouble(txtGoalWeight.Text);
+            name = txtName.Text;
+            currentWeight = Convert.ToDouble(txtCurrentWeight.Text);
+
             Profile newProfile = new Profile();
             //newProfile.Name = name;
             //newProfile.GoalDate = date.Value;

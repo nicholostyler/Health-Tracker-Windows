@@ -26,5 +26,29 @@ namespace Health_Track
         {
             this.InitializeComponent();
         }
+
+        private async void btnAbout_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new ContentDialog();
+            StackPanel contentMain = new StackPanel();
+            TextBlock dialogDescription = new TextBlock();
+            HyperlinkButton licenseHyperlink = new HyperlinkButton();
+            licenseHyperlink.Content = "MIT License";
+            licenseHyperlink.NavigateUri = new Uri("https://opensource.org/licenses/MIT");
+            dialogDescription.Text = "Health Tracker 1.0.2";
+            contentMain.Children.Add(dialogDescription);
+            contentMain.Children.Add(licenseHyperlink);
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "About Health Tracker";
+            dialog.CloseButtonText = "Ok";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = contentMain;
+
+            var result = await dialog.ShowAsync();
+
+        }
     }
 }

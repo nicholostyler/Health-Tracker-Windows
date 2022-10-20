@@ -48,7 +48,7 @@ namespace Health_Track.Helpers
             // make sure the nullable value has a value
             //if (date.HasValue) return false;
             // if the value of the compareTo is greater than zero it is after today.
-            if (date.CompareTo(today) > 0) return false;
+            if (date.CompareTo(today) < 0) return false;
 
             return true;
         }

@@ -73,6 +73,14 @@ namespace Health_Track.ViewModels
 
         public async Task InitAsync()
         {
+            if (WeightRecords.Count > 0)
+            {
+                // this is the initial setup
+                ShowAdd = false;
+                ShowMain = true;
+                return;
+            }
+
             ShowAdd = true;
             ShowMain = false;
             // Read the WeightRecords.json
@@ -352,7 +360,9 @@ namespace Health_Track.ViewModels
                     }
                     else if (compareDate > 0)
                     {
+                        // is at the start of the list
                         WeightRecords.Insert(looper, newWeightRecord);
+                        Profile.CurrentWeight = newWeightRecord.Weight;
                         // Calculate new statistics
                         GenerateDashboard();
                         // begin to save into JSON
@@ -410,8 +420,7 @@ namespace Health_Track.ViewModels
 
             if (WeightRecords.Count == 0)
             {
-                ShowAdd = true;
-                ShowMain = false;
+                await ResetProfile();
                 return;
             }
             
@@ -433,9 +442,7 @@ namespace Health_Track.ViewModels
 
             if (WeightRecords.Count == 0)
             {
-                Profile.CurrentWeight = 0;
-                ShowAdd = true;
-                ShowMain = false;
+                await ResetProfile();
                 return;
             }
 
@@ -510,7 +517,7 @@ namespace Health_Track.ViewModels
             var largestWeight = WeightRecords.Max(weight => weight.Weight);
             var lostTotal = largestWeight - Profile.CurrentWeight;
             var averageWeight = WeightRecords.Sum(weight => weight.Weight) / WeightRecords.Count;
-            Profile.AverageWeight = averageWeight;
+            Profile.AverageWeight = Math.Round(averageWeight, 2);
             Profile.TotalLost = lostTotal;
         }
 
@@ -521,6 +528,19 @@ namespace Health_Track.ViewModels
             var amountToLose = Profile.StartingWeight - Profile.GoalWeight;
             var percentage = Profile.GoalWeight / Profile.CurrentWeight;
             Profile.GoalPercentage = percentage * 100;
+        }
+
+        public async Task ResetProfile()
+        {
+            ShowAdd = true;
+            ShowMain = false;
+
+            Profile.CurrentWeight = 0;
+            Profile.Weight30Days = 0;
+            Profile.Weight7Days = 0;
+            Profile.WeightLastYear = 0;
+            Profile.AverageWeight = 0;
+            await SerializeProfileAsync();
         }
     }
 }
